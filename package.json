@@ -1,0 +1,34 @@
+{
+  "name": "angelyzer",
+  "version": "1.0.0",
+  "description": "An angular project analyzer, usefull for handling Singleton services, Imports, Exports, and much more",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meyacine/angelyzer.git"
+  },
+  "keywords": [
+    "Angular",
+    "ng",
+    "ngx",
+    "analyzer",
+    "ast",
+    "dependencies"
+  ],
+  "author": "Yacine MEDDAH <my.meddah@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meyacine/angelyzer/issues"
+  },
+  "homepage": "https://github.com/meyacine/angelyzer#readme",
+  "dependencies": {
+    "chalk": "^2.3.2",
+    "commander": "^2.15.1",
+    "recast": "^0.14.7",
+    "typescript": "^2.7.2",
+    "typescript-eslint-parser": "^14.0.0"
+  }
+}
