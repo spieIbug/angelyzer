@@ -1,9 +1,9 @@
-import {EdgeExtractorService} from "./edge-extractor.service";
-import {NodeExtractorService} from "./node-extractor.service";
-import {Graph} from "../model/graph.model";
-import {Edge} from "../model/edge.model";
-import {Node} from "../model/node.model";
-import {AngularModule} from "../model/angular-module.model";
+import {EdgeExtractorService} from './edge-extractor.service';
+import {NodeExtractorService} from './node-extractor.service';
+import {Graph} from '../model/graph.model';
+import {Edge} from '../model/edge.model';
+import {Node} from '../model/node.model';
+import {AngularModule} from '../model/angular-module.model';
 export class GraphExtractorService {
     private nodesService: NodeExtractorService;
     private edgesService: EdgeExtractorService;

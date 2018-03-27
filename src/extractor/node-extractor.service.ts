@@ -1,5 +1,5 @@
-import {Node} from "../model/node.model";
-import {AngularModule} from "../model/angular-module.model";
+import {Node} from '../model/node.model';
+import {AngularModule} from '../model/angular-module.model';
 
 export class NodeExtractorService {
     public importsToNodes(module: AngularModule): Node[] {

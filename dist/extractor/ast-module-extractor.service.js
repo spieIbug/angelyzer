@@ -2,14 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var angular_module_model_1 = require("../model/angular-module.model");
 var fs = require('fs');
-var recast = require("recast");
+var recast = require('recast');
 var ASTModuleExtractorService = /** @class */ (function () {
     function ASTModuleExtractorService() {
     }
     ASTModuleExtractorService.prototype.extractModule = function (fileContent) {
-        var ast = recast.parse(fileContent, {
-            parser: require("typescript-eslint-parser")
-        });
+        var ast = this.getAST(fileContent);
         var nodes = ast.program.body;
         for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
             var node = nodes_1[_i];
@@ -27,6 +25,11 @@ var ASTModuleExtractorService = /** @class */ (function () {
             }
         }
         return null;
+    };
+    ASTModuleExtractorService.prototype.getAST = function (fileContent) {
+        return recast.parse(fileContent, {
+            parser: require("typescript-eslint-parser")
+        });
     };
     ASTModuleExtractorService.prototype.extractModuleName = function (node /*ExportNamedDeclaration | ClassDeclaration*/) {
         return node.declaration.id.name;
@@ -61,7 +64,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             break;
                         }
                         default: {
-                            console.log('Analyse d\'imports, je n\'arrive pas  identifier ', element.type);
+                            console.log('Imports analyzing, can not find Identifier ', element.type);
                         }
                     }
                 }
@@ -91,7 +94,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             break;
                         }
                         default: {
-                            console.log('Analyse d\'exports, je n\'arrive pas  identifier ', element.type);
+                            console.log('Exports analyzing, can not find exports ', element.type);
                         }
                     }
                 }
@@ -131,7 +134,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             break;
                         }
                         default: {
-                            console.log('Analyse de providers, je n\'arrive pas  identifier ', element.type);
+                            console.log('Providers analyzing, can not find Identifier ', element.type);
                         }
                     }
                 }
@@ -157,7 +160,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             break;
                         }
                         default: {
-                            console.log('Analyse de declarations, je n\'arrive pas  identifier ', element.type);
+                            console.log('Declarations analyzing, Can not find Identifier ', element.type);
                         }
                     }
                 }
@@ -178,7 +181,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             break;
                         }
                         default: {
-                            console.log('Analyse de bootstrap, je n\'arrive pas  identifier ', element.type);
+                            console.log('Bootstrap analyzing, Can not find bootstrap ', element.type);
                         }
                     }
                 }

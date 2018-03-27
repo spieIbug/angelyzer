@@ -1,14 +1,12 @@
 import {AngularModule} from '../model/angular-module.model';
 const fs = require('fs');
-const recast = require("recast");
+const recast = require('recast');
 
 export class ASTModuleExtractorService {
 
     public extractModule(fileContent: string): AngularModule {
 
-        const ast = recast.parse(fileContent, {
-            parser: require("typescript-eslint-parser")
-        });
+        const ast = this.getAST(fileContent);
 
         let nodes = ast.program.body;
 
@@ -30,7 +28,13 @@ export class ASTModuleExtractorService {
 
     }
 
-    private extractModuleName(node: any /*ExportNamedDeclaration | ClassDeclaration*/): string {
+  public getAST(fileContent: string) {
+    return recast.parse(fileContent, {
+      parser: require("typescript-eslint-parser")
+    });
+  }
+
+  private extractModuleName(node: any /*ExportNamedDeclaration | ClassDeclaration*/): string {
         return node.declaration.id.name;
     }
 

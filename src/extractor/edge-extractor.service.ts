@@ -1,5 +1,5 @@
-import {Edge} from "../model/edge.model";
-import {AngularModule} from "../model/angular-module.model";
+import {Edge} from '../model/edge.model';
+import {AngularModule} from '../model/angular-module.model';
 export class EdgeExtractorService {
     public edgesForImports(module: AngularModule): Edge[] {
         if (module.imports) {

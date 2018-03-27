@@ -1,6 +1,7 @@
 import { AngularModule } from '../model/angular-module.model';
 export declare class ASTModuleExtractorService {
     extractModule(fileContent: string): AngularModule;
+    getAST(fileContent: string): any;
     private extractModuleName(node);
     private extractNgModuleDecorator(node);
     private extractImports(ngModuleDecorator, programBody);
