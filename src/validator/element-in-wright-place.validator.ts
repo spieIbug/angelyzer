@@ -1,6 +1,7 @@
 import { Validator } from './validator';
 import { Validation } from '../../dist/model/validation.model';
 import { elementNotInWrightPlace, elementsNotInWrightPlace } from '../template/element-not-in-wright-place.template';
+import { RuleEnum } from '../model/rule.enum';
 
 /**
  * a validator that checks if you've not thing like :
@@ -22,7 +23,7 @@ export class ElementInWrightPlaceValidator implements Validator {
     }
     if (listOfViolations.length > 0) {
       return new Validation({
-        rule: 'Element not in wright place',
+        rule: RuleEnum.ELEMENT_CAN_NOT_BE_PROVIDED.toString(), //todo: fix me
         className: module.name,
         error: elementsNotInWrightPlace(listOfViolations)
       });

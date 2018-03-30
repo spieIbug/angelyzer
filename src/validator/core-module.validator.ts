@@ -2,6 +2,7 @@ import { AngularModule } from '../model/angular-module.model';
 import { Validation } from '../model/validation.model';
 import { forRootRecommandationTemplate } from '../template/for-root.template';
 import { Validator } from './validator';
+import { RuleEnum } from '../model/rule.enum';
 
 /**
  * Validator that check if you have defined exports, and providers in same module without forRoot method
@@ -28,7 +29,7 @@ export class CoreModuleValidator implements Validator {
             }
           }
           return new Validation({
-            rule: 'CoreModule/SharedModule',
+            rule: RuleEnum.CORE_MODULE_SHARED_MODULE_PATTERN.toString(),
             className: module.name,
             error: forRootRecommandationTemplate(module)
           });

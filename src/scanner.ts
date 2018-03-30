@@ -6,9 +6,7 @@ import { graphJSTemplate } from './template/code.js.template';
 import { validationTemplate } from './template/validations.html.template';
 import { Validation } from './model/validation.model';
 import { ElementInWrightPlaceValidator } from './validator/element-in-wright-place.validator';
-
 const fs = require('fs');
-const recast = require('recast');
 
 export class Scanner {
 
@@ -16,7 +14,8 @@ export class Scanner {
   private astModuleExtractorService: ASTModuleExtractorService;
   private coreModuleValidation: CoreModuleValidator;
   private elementNotInWrightPlaceValidator: ElementInWrightPlaceValidator;
-  public modules: AngularModule[] = [];
+
+  private modules: AngularModule[] = [];
   private fileCount: number = 0;
   private validations: Validation[] = [];
 
@@ -53,11 +52,16 @@ export class Scanner {
     this.fileCount++;
     const fileContent = fs.readFileSync(inputFile, 'utf-8');
     console.log(this.fileCount, ' scanning file :', inputFile);
+    // read module
     const angularModule = <AngularModule> this.astModuleExtractorService.extractModule(fileContent);
-    const validation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(fileContent));
-    const elemtvalidation = this.elementNotInWrightPlaceValidator.validate(angularModule);
-    if (validation) this.validations.push(validation);
-    if (elemtvalidation) this.validations.push(elemtvalidation);
     this.modules.push(angularModule);
+    //
+    const coreSharedModulePatternValidation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(fileContent));
+    const elementsValidation = this.elementNotInWrightPlaceValidator.validate(angularModule);
+
+    if (coreSharedModulePatternValidation) this.validations.push(coreSharedModulePatternValidation);
+    if (elementsValidation) this.validations.push(elementsValidation);
+
+
   }
 }

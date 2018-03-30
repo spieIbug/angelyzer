@@ -1,11 +1,9 @@
-`npm install -g` will provide angelyzer command globaly
+#Description 
 
-`npm install` or ``yarn install` to install dependencies
+Angelyzer is a CLI that allows you to scan your angular app, and detect potentional problems.
 
-`node ./dist/index.js scan .PATH_TO_ANGULAR_PROJECT` or
+#How to use it ?
 
-`ts-node ./src/index.ts scan .PATH_TO_ANGULAR_PROJECT` or
-                                                                                                                                              
-`angelyzer scan .PATH_TO_ANGULAR_PROJECT`
+`angelyzer scan .PATH_TO_ANGULAR_PROJECT/src/app`
 
-This will generate nodes.json & report.json, you can visualize the graph by opening index.html located in report folder
+This will generate a report folder, you can visualize the scan result by opening index.html located in report folder
