@@ -2,9 +2,10 @@ import { AngularModule } from './model/angular-module.model';
 import { GraphExtractorService } from './extractor/graph-extractor.service';
 import { ASTModuleExtractorService } from './extractor/ast-module-extractor.service';
 import { CoreModuleValidator } from './validator/core-module.validator';
-import { CODE } from './template/code.js';
+import { graphJSTemplate } from './template/code.js.template';
+import { validationTemplate } from './template/validations.html.template';
 import { Validation } from './model/validation.model';
-import { VALIDATIONS } from './template/validations.html';
+import { ElementInWrightPlaceValidator } from './validator/element-in-wright-place.validator';
 
 const fs = require('fs');
 const recast = require('recast');
@@ -14,6 +15,7 @@ export class Scanner {
   private graphService: GraphExtractorService;
   private astModuleExtractorService: ASTModuleExtractorService;
   private coreModuleValidation: CoreModuleValidator;
+  private elementNotInWrightPlaceValidator: ElementInWrightPlaceValidator;
   public modules: AngularModule[] = [];
   private fileCount: number = 0;
   private validations: Validation[] = [];
@@ -22,6 +24,7 @@ export class Scanner {
     this.astModuleExtractorService = new ASTModuleExtractorService();
     this.graphService = new GraphExtractorService();
     this.coreModuleValidation = new CoreModuleValidator();
+    this.elementNotInWrightPlaceValidator = new ElementInWrightPlaceValidator();
   }
 
   public scanPath(files: string[], modulePath: string): void {
@@ -39,8 +42,8 @@ export class Scanner {
       const graph = this.graphService.computeGraph(this.modules);
       fs.writeFileSync('./report/report.json', JSON.stringify(this.modules, null, 2));
       fs.writeFileSync('./report/nodes.json', JSON.stringify(graph, null, 2));
-      fs.writeFileSync('./report/validations.html', VALIDATIONS(this.validations));
-      fs.writeFileSync('./report/code.js', CODE(graph));
+      fs.writeFileSync('./report/validations.html', validationTemplate(this.validations));
+      fs.writeFileSync('./report/code.js', graphJSTemplate(graph));
     } else {
       console.log('No files found');
     }
@@ -52,7 +55,9 @@ export class Scanner {
     console.log(this.fileCount, ' scanning file :', inputFile);
     const angularModule = <AngularModule> this.astModuleExtractorService.extractModule(fileContent);
     const validation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(fileContent));
+    const elemtvalidation = this.elementNotInWrightPlaceValidator.validate(angularModule);
     if (validation) this.validations.push(validation);
+    if (elemtvalidation) this.validations.push(elemtvalidation);
     this.modules.push(angularModule);
   }
 }

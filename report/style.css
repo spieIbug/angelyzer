@@ -49,11 +49,6 @@ body {
     line-height: 24px;
     font-weight: 400;
     list-style-type: disc;
-    -webkit-margin-before: 1em;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
-    -webkit-padding-start: 40px;
     white-space: nowrap;
 }
 .menu-element {
@@ -83,4 +78,31 @@ body {
     position: absolute;
     left: 0;
     top: 0;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: table;
+    border-color: grey;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #ddd;
+    padding: 8px;
+    line-height: 1.42857143;
+}
+td {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+pre {
+    background: #2a2827;
+    color: #f7f7f7;
+    line-height: 1.5;
 }

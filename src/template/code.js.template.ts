@@ -1,8 +1,10 @@
-export const CODE = data => (`cytoscape({
+export const graphJSTemplate = data => (`cytoscape({
     container: document.getElementById('cy'),
 
     layout: {
-        name: 'cose',
+        name: 'breadthfirst',
+        circle: true,
+        roots: ['AppModule'],
         padding: 10
     },
 

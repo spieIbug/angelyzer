@@ -1,7 +1,12 @@
 import { AngularModule } from '../model/angular-module.model';
 import { Validation } from '../model/validation.model';
+import { forRootRecommandationTemplate } from '../template/for-root.template';
+import { Validator } from './validator';
 
-export class CoreModuleValidator {
+/**
+ * Validator that check if you have defined exports, and providers in same module without forRoot method
+ */
+export class CoreModuleValidator implements Validator {
 
   /**
    * Validate the given AngularModule and browse AST if the given has providers, and exports
@@ -25,22 +30,7 @@ export class CoreModuleValidator {
           return new Validation({
             rule: 'CoreModule/SharedModule',
             className: module.name,
-            error: `<p>The module ${module.name} has exports ${JSON.stringify(module.exports)} and providers ${JSON.stringify(module.providers)}</p>
-            <p>You should have a :</p>
-            <code>
-            static forRoot(): ModuleWithProviders {
-              return {
-                ngModule: ${module.name},
-                providers: ${JSON.stringify(module.providers)}
-              };
-            }
-            </code>
-            <p>Or define a CoreModule that only provide ${JSON.stringify(module.providers)}</p>
-            
-            <p>Becarefull : the forRoot is for AppModule not children.</p>
-           
-            <a href="https://angular.io/guide/singleton-services">@see</a> & <a href="https://angular.io/guide/ngmodule-faq#why-is-it-bad-if-a-shared-module-provides-a-service-to-a-lazy-loaded-module">@see</a>
-            `
+            error: forRootRecommandationTemplate(module)
           });
         }
       }
