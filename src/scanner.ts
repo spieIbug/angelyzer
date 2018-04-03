@@ -12,6 +12,7 @@ import { DeclarationsValidator } from './validator/declarations.validator';
 import { ImportRefactorValidator } from './validator/import-refactor.validator';
 import { refactorTemplate } from './template/refactor.html.template';
 import { DeclarationRefactorValidator } from './validator/declaration-refactor.validator';
+import { ProvidersRefactorValidator } from './validator/providers-refactor.validator';
 const fs = require('fs');
 
 export class Scanner {
@@ -22,13 +23,16 @@ export class Scanner {
   private providersValidator: ProvidersValidator;
   private importsValidator: ImportsValidator;
   private exportsValidator: ExportsValidator;
+  private declarationsValidator: DeclarationsValidator;
   private importRefactorValidator: ImportRefactorValidator;
   private declarationRefactorValidator: DeclarationRefactorValidator;
+  private providersRefactorValidator: ProvidersRefactorValidator;
 
   private modules: AngularModule[] = [];
   private fileCount: number = 0;
   private validations: Validation[] = [];
-  private declarationsValidator: DeclarationsValidator;
+
+
 
 
   constructor() {
@@ -41,6 +45,7 @@ export class Scanner {
     this.declarationsValidator = new DeclarationsValidator();
     this.importRefactorValidator = new ImportRefactorValidator();
     this.declarationRefactorValidator = new DeclarationRefactorValidator();
+    this.providersRefactorValidator = new ProvidersRefactorValidator();
   }
 
   public scanPath(files: string[], modulePath: string): void {
@@ -59,11 +64,13 @@ export class Scanner {
 
       const importRefactorValidations = this.importRefactorValidator.validate(this.modules);
       const declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
+      const providersRefactorValidations = this.providersRefactorValidator.validate(this.modules);
       fs.writeFileSync('./report/report.json', JSON.stringify(this.modules, null, 2));
       fs.writeFileSync('./report/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync('./report/validations.html', validationTemplate(this.validations));
       fs.writeFileSync('./report/refactor.html', refactorTemplate(importRefactorValidations));
       fs.writeFileSync('./report/declarations.html', refactorTemplate(declarationRefactorValidations));
+      fs.writeFileSync('./report/providers.html', refactorTemplate(providersRefactorValidations));
       fs.writeFileSync('./report/code.js', graphJSTemplate(graph));
     } else {
       console.log('No files found');

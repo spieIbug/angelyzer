@@ -20,6 +20,7 @@ export const validationTemplate = (validations: Validation[]) => {
                             <li class="menu-element"><a class="menu-link" href="validations.html">validations</a></li>
                             <li class="menu-element"><a class="menu-link" href="refactor.html">refactor</a></li>
                             <li class="menu-element"><a class="menu-link" href="declarations.html">declarations</a></li>
+                            <li class="menu-element"><a class="menu-link" href="providers.html">providers</a></li>
                         </ul>
                     </div>
                 </div>
