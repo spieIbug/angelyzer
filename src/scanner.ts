@@ -5,7 +5,13 @@ import { CoreModuleValidator } from './validator/core-module.validator';
 import { graphJSTemplate } from './template/code.js.template';
 import { validationTemplate } from './template/validations.html.template';
 import { Validation } from './model/validation.model';
-import { ElementInWrightPlaceValidator } from './validator/element-in-wright-place.validator';
+import { ProvidersValidator } from './validator/providers.validator';
+import { ImportsValidator } from './validator/imports.validator';
+import { ExportsValidator } from './validator/exports.validator';
+import { DeclarationsValidator } from './validator/declarations.validator';
+import { ImportRefactorValidator } from './validator/import-refactor.validator';
+import { refactorTemplate } from './template/refactor.html.template';
+import { DeclarationRefactorValidator } from './validator/declaration-refactor.validator';
 const fs = require('fs');
 
 export class Scanner {
@@ -13,17 +19,28 @@ export class Scanner {
   private graphService: GraphExtractorService;
   private astModuleExtractorService: ASTModuleExtractorService;
   private coreModuleValidation: CoreModuleValidator;
-  private elementNotInWrightPlaceValidator: ElementInWrightPlaceValidator;
+  private providersValidator: ProvidersValidator;
+  private importsValidator: ImportsValidator;
+  private exportsValidator: ExportsValidator;
+  private importRefactorValidator: ImportRefactorValidator;
+  private declarationRefactorValidator: DeclarationRefactorValidator;
 
   private modules: AngularModule[] = [];
   private fileCount: number = 0;
   private validations: Validation[] = [];
+  private declarationsValidator: DeclarationsValidator;
+
 
   constructor() {
     this.astModuleExtractorService = new ASTModuleExtractorService();
     this.graphService = new GraphExtractorService();
     this.coreModuleValidation = new CoreModuleValidator();
-    this.elementNotInWrightPlaceValidator = new ElementInWrightPlaceValidator();
+    this.providersValidator = new ProvidersValidator();
+    this.importsValidator = new ImportsValidator();
+    this.exportsValidator = new ExportsValidator();
+    this.declarationsValidator = new DeclarationsValidator();
+    this.importRefactorValidator = new ImportRefactorValidator();
+    this.declarationRefactorValidator = new DeclarationRefactorValidator();
   }
 
   public scanPath(files: string[], modulePath: string): void {
@@ -39,9 +56,14 @@ export class Scanner {
       });
 
       const graph = this.graphService.computeGraph(this.modules);
+
+      const importRefactorValidations = this.importRefactorValidator.validate(this.modules);
+      const declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
       fs.writeFileSync('./report/report.json', JSON.stringify(this.modules, null, 2));
       fs.writeFileSync('./report/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync('./report/validations.html', validationTemplate(this.validations));
+      fs.writeFileSync('./report/refactor.html', refactorTemplate(importRefactorValidations));
+      fs.writeFileSync('./report/declarations.html', refactorTemplate(declarationRefactorValidations));
       fs.writeFileSync('./report/code.js', graphJSTemplate(graph));
     } else {
       console.log('No files found');
@@ -57,11 +79,15 @@ export class Scanner {
     this.modules.push(angularModule);
     //
     const coreSharedModulePatternValidation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(fileContent));
-    const elementsValidation = this.elementNotInWrightPlaceValidator.validate(angularModule);
+    const providersValidation = this.providersValidator.validate(angularModule);
+    const exportsValidation = this.exportsValidator.validate(angularModule);
+    const importsValidation = this.importsValidator.validate(angularModule);
+    const declarationsValidation = this.declarationsValidator.validate(angularModule);
 
     if (coreSharedModulePatternValidation) this.validations.push(coreSharedModulePatternValidation);
-    if (elementsValidation) this.validations.push(elementsValidation);
-
-
+    if (providersValidation) this.validations.push(providersValidation);
+    if (exportsValidation) this.validations.push(exportsValidation);
+    if (importsValidation) this.validations.push(importsValidation);
+    if (declarationsValidation) this.validations.push(declarationsValidation);
   }
 }

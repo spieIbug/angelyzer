@@ -8,5 +8,5 @@ export interface Validator {
    * @param ast : Optional, can be used when looking for variables references
    * @returns {Validation}
    */
-  validate(module: AngularModule, ast?: any): Validation;
+  validate(module: AngularModule | AngularModule[], ast?: any): Validation | Validation[];
 }

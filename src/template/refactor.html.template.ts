@@ -1,6 +1,6 @@
 import { Validation } from '../model/validation.model';
 
-export const validationTemplate = (validations: Validation[]) => {
+export const refactorTemplate = (validations: Validation[]) => {
   let content: string = '';
   for (const validation of validations) {
     content += `<tr><td>${validation.rule}</td><td>${validation.className}</td><td>${validation.error}</td></tr>`;
@@ -25,7 +25,7 @@ export const validationTemplate = (validations: Validation[]) => {
                 </div>
             </div>
             <div class="content">
-              <h4>Analysis result for validations : ${validations.length} modules identified with errors</h4>
+              <h4>Analysis result for refactor : ${validations.length} modules can be refactored</h4>
               <table>
                   <tr>
                       <th>Type</th>
