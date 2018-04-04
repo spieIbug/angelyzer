@@ -13,6 +13,7 @@ import { ImportRefactorValidator } from './validator/import-refactor.validator';
 import { refactorTemplate } from './template/refactor.html.template';
 import { DeclarationRefactorValidator } from './validator/declaration-refactor.validator';
 import { ProvidersRefactorValidator } from './validator/providers-refactor.validator';
+
 const fs = require('fs');
 
 export class Scanner {
@@ -33,8 +34,6 @@ export class Scanner {
   private validations: Validation[] = [];
 
 
-
-
   constructor() {
     this.astModuleExtractorService = new ASTModuleExtractorService();
     this.graphService = new GraphExtractorService();
@@ -48,7 +47,7 @@ export class Scanner {
     this.providersRefactorValidator = new ProvidersRefactorValidator();
   }
 
-  public scanPath(files: string[], modulePath: string): void {
+  public scanPath(files: string[], modulePath: string, savePath: string): void {
     if (files) {
       files.forEach(file => {
         const fullQualifierPath = modulePath + '/' + file;
@@ -56,7 +55,7 @@ export class Scanner {
           // scan uniquement de modules
           if (fullQualifierPath.indexOf('module.ts') !== -1) this.processFile(fullQualifierPath);
         } else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
-          fs.readdir(fullQualifierPath, (err, files) => this.scanPath(files, fullQualifierPath));
+          fs.readdir(fullQualifierPath, (err, files) => this.scanPath(files, fullQualifierPath, savePath));
         }
       });
 
@@ -65,13 +64,17 @@ export class Scanner {
       const importRefactorValidations = this.importRefactorValidator.validate(this.modules);
       const declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
       const providersRefactorValidations = this.providersRefactorValidator.validate(this.modules);
-      fs.writeFileSync('./report/report.json', JSON.stringify(this.modules, null, 2));
-      fs.writeFileSync('./report/nodes.json', JSON.stringify(graph, null, 2));
-      fs.writeFileSync('./report/validations.html', validationTemplate(this.validations));
-      fs.writeFileSync('./report/refactor.html', refactorTemplate(importRefactorValidations));
-      fs.writeFileSync('./report/declarations.html', refactorTemplate(declarationRefactorValidations));
-      fs.writeFileSync('./report/providers.html', refactorTemplate(providersRefactorValidations));
-      fs.writeFileSync('./report/code.js', graphJSTemplate(graph));
+      fs.writeFileSync(savePath + '/angular.png', fs.readFileSync('./src/template/static/angular.png'));
+      fs.writeFileSync(savePath + '/cytoscape.min.js', fs.readFileSync('./src/template/static/cytoscape.min.js'));
+      fs.writeFileSync(savePath + '/index.html', fs.readFileSync('./src/template/static/index.html'));
+      fs.writeFileSync(savePath + '/style.css', fs.readFileSync('./src/template/static/style.css'));
+      fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
+      fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
+      fs.writeFileSync(savePath + '/validations.html', validationTemplate(this.validations));
+      fs.writeFileSync(savePath + '/refactor.html', refactorTemplate(importRefactorValidations));
+      fs.writeFileSync(savePath + '/declarations.html', refactorTemplate(declarationRefactorValidations));
+      fs.writeFileSync(savePath + '/providers.html', refactorTemplate(providersRefactorValidations));
+      fs.writeFileSync(savePath + '/code.js', graphJSTemplate(graph));
     } else {
       console.log('No files found');
     }
