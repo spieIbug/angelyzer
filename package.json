@@ -1,6 +1,6 @@
 {
   "name": "angelyzer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An angular project analyzer, usefull for handling Singleton services, Imports, Exports, and much more",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
