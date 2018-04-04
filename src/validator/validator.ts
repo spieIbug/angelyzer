@@ -1,5 +1,5 @@
-import { Validation } from '../../dist/model/validation.model';
 import { AngularModule } from '../model/angular-module.model';
+import { Validation } from '../model/validation.model';
 
 export interface Validator {
   /**

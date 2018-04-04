@@ -1,7 +1,7 @@
 import { Validator } from './validator';
-import { Validation } from '../../dist/model/validation.model';
 import { elementNotInWrightPlace, elementsNotInWrightPlace } from '../template/element-not-in-wright-place.template';
 import { RuleEnum } from '../model/rule.enum';
+import { Validation } from '../model/validation.model';
 
 /**
  * a validator that checks if you've not thing like :

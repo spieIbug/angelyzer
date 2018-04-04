@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 require("./polyfills");
 var commander = require("commander");
 var chalk_1 = require("chalk");
@@ -11,7 +11,7 @@ commander.version('1.0.0').description('Angular analyzer');
 commander.command('scan <modulePath> <savePath>').description('Scan an angular project')
     .action(function (modulePath, savePath) {
     var effectiveSavePath = savePath + '/angelyzer_report/';
-    console.log(chalk_1.default.red("=========*** scanning " + modulePath + " ***=========="));
+    console.log(chalk_1["default"].red("=========*** scanning " + modulePath + " ***=========="));
     mkdirp.sync(effectiveSavePath);
     var scanner = new scanner_1.Scanner();
     fs.readdir(modulePath, function (err, files) { return scanner.scanPath(files, modulePath, effectiveSavePath); });

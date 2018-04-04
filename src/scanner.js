@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var graph_extractor_service_1 = require("./extractor/graph-extractor.service");
 var ast_module_extractor_service_1 = require("./extractor/ast-module-extractor.service");
 var core_module_validator_1 = require("./validator/core-module.validator");

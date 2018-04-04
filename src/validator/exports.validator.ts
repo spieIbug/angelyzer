@@ -1,8 +1,8 @@
 import { Validator } from './validator';
-import { AngularModule } from '../../dist/model/angular-module.model';
-import { Validation } from '../../dist/model/validation.model';
 import { RuleEnum } from '../model/rule.enum';
 import { elementNotInWrightPlace, elementsNotInWrightPlace } from '../template/element-not-in-wright-place.template';
+import { AngularModule } from '../model/angular-module.model';
+import { Validation } from '../model/validation.model';
 
 export class ExportsValidator implements Validator {
   validate(module: AngularModule, ast?: any): Validation {

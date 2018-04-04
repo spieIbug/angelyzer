@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var validation_model_1 = require("../model/validation.model");
 var for_root_template_1 = require("../template/for-root.template");
 var rule_enum_1 = require("../model/rule.enum");

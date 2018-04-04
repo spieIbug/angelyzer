@@ -1,6 +1,10 @@
 import { AngularModule } from '../model/angular-module.model';
 import { Validation } from '../model/validation.model';
-export declare class CoreModuleValidator {
+import { Validator } from './validator';
+/**
+ * Validator that check if you have defined exports, and providers in same module without forRoot method
+ */
+export declare class CoreModuleValidator implements Validator {
     /**
      * Validate the given AngularModule and browse AST if the given has providers, and exports
      * @param {AngularModule} module
