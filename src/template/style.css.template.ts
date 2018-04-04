@@ -1,4 +1,5 @@
-body {
+export const cssTemplate = () => {
+  return `body {
     font: 14px helvetica neue, helvetica, arial, sans-serif;
 }
 .toolbar {
@@ -121,4 +122,5 @@ pre {
 }
 .sticky + .content {
     padding-top: 60px;
-}
+}`;
+};

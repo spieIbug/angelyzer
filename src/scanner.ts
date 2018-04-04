@@ -13,6 +13,8 @@ import { ImportRefactorValidator } from './validator/import-refactor.validator';
 import { refactorTemplate } from './template/refactor.html.template';
 import { DeclarationRefactorValidator } from './validator/declaration-refactor.validator';
 import { ProvidersRefactorValidator } from './validator/providers-refactor.validator';
+import { indexTemplate } from './template/index.html.template';
+import { cssTemplate } from './template/style.css.template';
 
 const fs = require('fs');
 
@@ -64,10 +66,8 @@ export class Scanner {
       const importRefactorValidations = this.importRefactorValidator.validate(this.modules);
       const declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
       const providersRefactorValidations = this.providersRefactorValidator.validate(this.modules);
-      fs.writeFileSync(savePath + '/angular.png', fs.readFileSync('./src/template/static/angular.png'));
-      fs.writeFileSync(savePath + '/cytoscape.min.js', fs.readFileSync('./src/template/static/cytoscape.min.js'));
-      fs.writeFileSync(savePath + '/index.html', fs.readFileSync('./src/template/static/index.html'));
-      fs.writeFileSync(savePath + '/style.css', fs.readFileSync('./src/template/static/style.css'));
+      fs.writeFileSync(savePath + '/index.html', indexTemplate());
+      fs.writeFileSync(savePath + '/style.css', cssTemplate());
       fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
       fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync(savePath + '/validations.html', validationTemplate(this.validations));

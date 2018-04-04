@@ -15,7 +15,7 @@ export const validationTemplate = (validations: Validation[]) => {
                 <div class="toolbar-row">
                     <div class="toolbar-menu">
                         <ul class="menu-elements">
-                            <li class="menu-element"><img src="angular.png" class="logo"></li>
+                            <li class="menu-element"><img src="https://angular.io/assets/images/logos/angular/logo-nav@2x.png" class="logo"></li>
                             <li class="menu-element"><a class="menu-link" href="index.html">graph</a></li>
                             <li class="menu-element"><a class="menu-link" href="validations.html">validations</a></li>
                             <li class="menu-element"><a class="menu-link" href="refactor.html">refactor</a></li>
