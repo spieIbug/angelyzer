@@ -1,17 +1,18 @@
 {
   "name": "angelyzer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An angular project analyzer, usefull for handling Singleton services, Imports, Exports, and much more",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "preferGlobal": true,
-  "bin": "./dist/index.js",
+  "bin": {
+    "angelyzer": "./dist/index.js"
+  },
   "scripts": {
     "start": "ts-node -- ./src/index.ts",
     "ts-node": "ts-node ./src/index.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "scan": "./node_modules/.bin/ts-node ./src/index.ts  scan"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
