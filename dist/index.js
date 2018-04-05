@@ -7,7 +7,7 @@ var chalk_1 = require("chalk");
 var scanner_1 = require("./scanner");
 var fs = require("fs");
 var mkdirp = require('mkdirp');
-commander.version('1.0.4').description('Angular analyzer');
+commander.version('1.0.5').description('Angular analyzer');
 commander.command('scan <modulePath> <savePath>').description('Scan an angular project')
     .action(function (modulePath, savePath) {
     var effectiveSavePath = savePath + '/angelyzer_report/';

@@ -6,7 +6,7 @@ import { Scanner } from './scanner';
 import fs = require('fs')
 const mkdirp = require('mkdirp');
 
-commander.version('1.0.4').description('Angular analyzer');
+commander.version('1.0.5').description('Angular analyzer');
 
 commander.command('scan <modulePath> <savePath>').description('Scan an angular project')
   .action((modulePath, savePath) => {
