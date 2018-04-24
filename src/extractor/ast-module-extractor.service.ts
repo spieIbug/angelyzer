@@ -1,6 +1,7 @@
 import {AngularModule} from '../model/angular-module.model';
-const fs = require('fs');
-const recast = require('recast');
+import fs = require('fs');
+import recast = require('recast');
+
 
 export class ASTModuleExtractorService {
 
@@ -109,6 +110,12 @@ export class ASTModuleExtractorService {
         return this.extractImportsExports(ngModuleDecorator, programBody, 'imports');
     }
 
+    /**
+     * Extract providers from NgModule decorator
+     * @param decorator
+     * @param programBody
+     * @returns {Array}
+     */
     private extractProviders(decorator: any, programBody: any): string[] {
         const providers = [];
         for (const property of decorator.properties) {
@@ -148,6 +155,12 @@ export class ASTModuleExtractorService {
         return providers;
     }
 
+    /**
+     * Extract declarations from NgModule decorator
+     * @param decorator
+     * @param programBody
+     * @returns {Array}
+     */
     private extractDeclarations(decorator: any, programBody: any): string[] {
         const declarations = [];
         for (const property of decorator.properties) {
@@ -173,6 +186,11 @@ export class ASTModuleExtractorService {
         return declarations;
     }
 
+    /**
+     * Extract bootstrap properties form NgModule decorator
+     * @param decorator
+     * @returns {Array}
+     */
     private extractBootStrap(decorator: any): string[] {
         const bootstrap = [];
         for (const property of decorator.properties) {
@@ -193,6 +211,12 @@ export class ASTModuleExtractorService {
         return bootstrap;
     }
 
+    /**
+     * Scan programBody for given varName and return corresponding value
+     * @param programBody
+     * @param varName
+     * @returns {Array}
+     */
     private extractVariableValues(programBody: any, varName: string): string[] {
         const values = [];
         for (const node of programBody) {

@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var angular_module_model_1 = require("../model/angular-module.model");
-var fs = require('fs');
-var recast = require('recast');
+var recast = require("recast");
 var ASTModuleExtractorService = /** @class */ (function () {
     function ASTModuleExtractorService() {
     }
@@ -50,9 +49,6 @@ var ASTModuleExtractorService = /** @class */ (function () {
                 return decorator.expression.arguments[0];
             }
         }
-    };
-    ASTModuleExtractorService.prototype.extractImports = function (ngModuleDecorator, programBody) {
-        return this.extractImportsExports(ngModuleDecorator, programBody, 'imports');
     };
     /**
      * Extracts Imports or Exports from a NgModule decorator.
@@ -104,6 +100,15 @@ var ASTModuleExtractorService = /** @class */ (function () {
     ASTModuleExtractorService.prototype.extractExports = function (decorator, programBody) {
         return this.extractImportsExports(decorator, programBody, 'exports');
     };
+    ASTModuleExtractorService.prototype.extractImports = function (ngModuleDecorator, programBody) {
+        return this.extractImportsExports(ngModuleDecorator, programBody, 'imports');
+    };
+    /**
+     * Extract providers from NgModule decorator
+     * @param decorator
+     * @param programBody
+     * @returns {Array}
+     */
     ASTModuleExtractorService.prototype.extractProviders = function (decorator, programBody) {
         var providers = [];
         for (var _i = 0, _a = decorator.properties; _i < _a.length; _i++) {
@@ -144,6 +149,12 @@ var ASTModuleExtractorService = /** @class */ (function () {
         }
         return providers;
     };
+    /**
+     * Extract declarations from NgModule decorator
+     * @param decorator
+     * @param programBody
+     * @returns {Array}
+     */
     ASTModuleExtractorService.prototype.extractDeclarations = function (decorator, programBody) {
         var declarations = [];
         for (var _i = 0, _a = decorator.properties; _i < _a.length; _i++) {
@@ -170,6 +181,11 @@ var ASTModuleExtractorService = /** @class */ (function () {
         }
         return declarations;
     };
+    /**
+     * Extract bootstrap properties form NgModule decorator
+     * @param decorator
+     * @returns {Array}
+     */
     ASTModuleExtractorService.prototype.extractBootStrap = function (decorator) {
         var bootstrap = [];
         for (var _i = 0, _a = decorator.properties; _i < _a.length; _i++) {
@@ -191,6 +207,12 @@ var ASTModuleExtractorService = /** @class */ (function () {
         }
         return bootstrap;
     };
+    /**
+     * Scan programBody for given varName and return corresponding value
+     * @param programBody
+     * @param varName
+     * @returns {Array}
+     */
     ASTModuleExtractorService.prototype.extractVariableValues = function (programBody, varName) {
         var values = [];
         for (var _i = 0, programBody_1 = programBody; _i < programBody_1.length; _i++) {

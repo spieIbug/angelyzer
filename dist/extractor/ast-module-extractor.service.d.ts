@@ -13,7 +13,6 @@ export declare class ASTModuleExtractorService {
     getAST(fileContent: string): any;
     private extractModuleName(node);
     private extractNgModuleDecorator(node);
-    private extractImports(ngModuleDecorator, programBody);
     /**
      * Extracts Imports or Exports from a NgModule decorator.
      *
@@ -26,8 +25,32 @@ export declare class ASTModuleExtractorService {
      */
     private extractImportsExports(decorator, programBody, type?);
     private extractExports(decorator, programBody);
+    private extractImports(ngModuleDecorator, programBody);
+    /**
+     * Extract providers from NgModule decorator
+     * @param decorator
+     * @param programBody
+     * @returns {Array}
+     */
     private extractProviders(decorator, programBody);
+    /**
+     * Extract declarations from NgModule decorator
+     * @param decorator
+     * @param programBody
+     * @returns {Array}
+     */
     private extractDeclarations(decorator, programBody);
+    /**
+     * Extract bootstrap properties form NgModule decorator
+     * @param decorator
+     * @returns {Array}
+     */
     private extractBootStrap(decorator);
+    /**
+     * Scan programBody for given varName and return corresponding value
+     * @param programBody
+     * @param varName
+     * @returns {Array}
+     */
     private extractVariableValues(programBody, varName);
 }
