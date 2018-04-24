@@ -6,6 +6,11 @@ var recast = require('recast');
 var ASTModuleExtractorService = /** @class */ (function () {
     function ASTModuleExtractorService() {
     }
+    /**
+     * Read an Angular Module fileContent and return AngularModule instance containing Decorator properties
+     * @param fileContent
+     * @returns {any}
+     */
     ASTModuleExtractorService.prototype.extractModule = function (fileContent) {
         var ast = this.getAST(fileContent);
         var nodes = ast.program.body;
@@ -26,6 +31,10 @@ var ASTModuleExtractorService = /** @class */ (function () {
         }
         return null;
     };
+    /**
+     * Extracts Abstract Syntax Tree for typescript
+     * @param fileContent
+     */
     ASTModuleExtractorService.prototype.getAST = function (fileContent) {
         return recast.parse(fileContent, {
             parser: require("typescript-eslint-parser")
@@ -43,64 +52,57 @@ var ASTModuleExtractorService = /** @class */ (function () {
         }
     };
     ASTModuleExtractorService.prototype.extractImports = function (ngModuleDecorator, programBody) {
-        var imports = [];
-        for (var _i = 0, _a = ngModuleDecorator.properties; _i < _a.length; _i++) {
-            var property = _a[_i];
-            if (property.key.name === 'imports') {
-                for (var _b = 0, _c = property.value.elements; _b < _c.length; _b++) {
-                    var element = _c[_b];
-                    switch (element.type) {
-                        case 'Identifier': {
-                            imports.push(element.name);
-                            break;
-                        }
-                        case 'CallExpression': {
-                            imports.push(element.callee.object.name);
-                            break;
-                        }
-                        case 'SpreadElement': {
-                            var values = this.extractVariableValues(programBody, element.argument.name);
-                            imports.push.apply(imports, values);
-                            break;
-                        }
-                        default: {
-                            console.log('Imports analyzing, can not find Identifier ', element.type);
-                        }
-                    }
-                }
-            }
-        }
-        return imports;
+        return this.extractImportsExports(ngModuleDecorator, programBody, 'imports');
     };
-    ASTModuleExtractorService.prototype.extractExports = function (decorator, programBody) {
-        var exports = [];
+    /**
+     * Extracts Imports or Exports from a NgModule decorator.
+     *
+     * Imports or Exports are simple strings arrays.
+     *
+     * @param decorator
+     * @param programBody
+     * @param type
+     * @returns {Array}
+     */
+    ASTModuleExtractorService.prototype.extractImportsExports = function (decorator, programBody, type) {
+        if (type === void 0) { type = 'imports'; }
+        var result = [];
         for (var _i = 0, _a = decorator.properties; _i < _a.length; _i++) {
             var property = _a[_i];
-            if (property.key.name === 'exports') {
-                for (var _b = 0, _c = property.value.elements; _b < _c.length; _b++) {
-                    var element = _c[_b];
-                    switch (element.type) {
-                        case 'Identifier': {
-                            exports.push(element.name);
-                            break;
-                        }
-                        case 'CallExpression': {
-                            exports.push(element.callee.object.name);
-                            break;
-                        }
-                        case 'SpreadElement': {
-                            var values = this.extractVariableValues(programBody, element.argument.name);
-                            exports.push.apply(exports, values);
-                            break;
-                        }
-                        default: {
-                            console.log('Exports analyzing, can not find exports ', element.type);
+            if (property.key.name === type) {
+                if (property.value.type === 'Identifier') {
+                    var values = this.extractVariableValues(programBody, property.value.name);
+                    result.push.apply(result, values);
+                }
+                else {
+                    for (var _b = 0, _c = property.value.elements; _b < _c.length; _b++) {
+                        var element = _c[_b];
+                        switch (element.type) {
+                            case 'Identifier': {
+                                result.push(element.name);
+                                break;
+                            }
+                            case 'CallExpression': {
+                                result.push(element.callee.object.name);
+                                break;
+                            }
+                            case 'SpreadElement': {
+                                var values = this.extractVariableValues(programBody, element.argument.name);
+                                result.push.apply(result, values);
+                                break;
+                            }
+                            default: {
+                                console.log('Can not find ' + type, element.type);
+                            }
                         }
                     }
                 }
             }
         }
-        return exports;
+        return result;
+    };
+    ASTModuleExtractorService.prototype.extractExports = function (decorator, programBody) {
+        return this.extractImportsExports(decorator, programBody, 'exports');
     };
     ASTModuleExtractorService.prototype.extractProviders = function (decorator, programBody) {
         var providers = [];
@@ -206,7 +208,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             }
                             // todo: handle useFactory, useExisting
                         }
-                        else {
+                        else { // cas Identifier
                             values.push(val.name);
                         }
                     }

@@ -4,6 +4,11 @@ const recast = require('recast');
 
 export class ASTModuleExtractorService {
 
+    /**
+     * Read an Angular Module fileContent and return AngularModule instance containing Decorator properties
+     * @param fileContent
+     * @returns {any}
+     */
     public extractModule(fileContent: string): AngularModule {
 
         const ast = this.getAST(fileContent);
@@ -28,13 +33,17 @@ export class ASTModuleExtractorService {
 
     }
 
-  public getAST(fileContent: string) {
-    return recast.parse(fileContent, {
-      parser: require("typescript-eslint-parser")
-    });
-  }
+    /**
+     * Extracts Abstract Syntax Tree for typescript
+     * @param fileContent
+     */
+    public getAST(fileContent: string) {
+        return recast.parse(fileContent, {
+            parser: require("typescript-eslint-parser")
+        });
+    }
 
-  private extractModuleName(node: any /*ExportNamedDeclaration | ClassDeclaration*/): string {
+    private extractModuleName(node: any /*ExportNamedDeclaration | ClassDeclaration*/): string {
         return node.declaration.id.name;
     }
 
@@ -46,62 +55,58 @@ export class ASTModuleExtractorService {
         }
     }
 
-    private extractImports(ngModuleDecorator: any, programBody: any): string[] {
-        const imports = [];
-        for (const property of ngModuleDecorator.properties) {
-            if (property.key.name === 'imports') {
-                for (const element of property.value.elements) {
-                    switch (element.type) {
-                        case 'Identifier': {
-                            imports.push(element.name);
-                            break;
-                        }
-                        case 'CallExpression': {
-                            imports.push(element.callee.object.name);
-                            break;
-                        }
-                        case 'SpreadElement': {
-                            const values = this.extractVariableValues(programBody, element.argument.name);
-                            imports.push(...values);
-                            break;
-                        }
-                        default: {
-                            console.log('Imports analyzing, can not find Identifier ', element.type);
+    /**
+     * Extracts Imports or Exports from a NgModule decorator.
+     *
+     * Imports or Exports are simple strings arrays.
+     *
+     * @param decorator
+     * @param programBody
+     * @param type
+     * @returns {Array}
+     */
+    private extractImportsExports(decorator: any, programBody: any, type: string = 'imports'): string[] {
+        const result = [];
+
+        for (const property of decorator.properties) {
+            if (property.key.name === type) {
+                if (property.value.type === 'Identifier') {
+                    const values = this.extractVariableValues(programBody, property.value.name);
+                    result.push(...values);
+                } else {
+                    for (const element of property.value.elements) {
+                        switch (element.type) {
+                            case 'Identifier': {
+                                result.push(element.name);
+                                break;
+                            }
+                            case 'CallExpression': {
+                                result.push(element.callee.object.name);
+                                break;
+                            }
+                            case 'SpreadElement': {
+                                const values = this.extractVariableValues(programBody, element.argument.name);
+                                result.push(...values);
+                                break;
+                            }
+                            default: {
+                                console.log('Can not find ' + type, element.type);
+                            }
                         }
                     }
                 }
             }
         }
-        return imports;
+
+        return result;
     }
 
     private extractExports(decorator: any, programBody: any): string[] {
-        const exports = [];
-        for (const property of decorator.properties) {
-            if (property.key.name === 'exports') {
-                for (const element of property.value.elements) {
-                    switch (element.type) {
-                        case 'Identifier': {
-                            exports.push(element.name);
-                            break;
-                        }
-                        case 'CallExpression': {
-                            exports.push(element.callee.object.name);
-                            break;
-                        }
-                        case 'SpreadElement': {
-                            const values = this.extractVariableValues(programBody, element.argument.name);
-                            exports.push(...values);
-                            break;
-                        }
-                        default: {
-                            console.log('Exports analyzing, can not find exports ', element.type);
-                        }
-                    }
-                }
-            }
-        }
-        return exports;
+        return this.extractImportsExports(decorator, programBody, 'exports');
+    }
+
+    private extractImports(ngModuleDecorator: any, programBody: any): string[] {
+        return this.extractImportsExports(ngModuleDecorator, programBody, 'imports');
     }
 
     private extractProviders(decorator: any, programBody: any): string[] {
