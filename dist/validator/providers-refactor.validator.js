@@ -18,7 +18,7 @@ var ProvidersRefactorValidator = /** @class */ (function () {
                 var parse = JSON.stringify(providersSet);
                 var validation = new validation_model_1.Validation({
                     className: key,
-                    error: key + " is provided in " + providersSet.size + " modules, " + parse + ". This is so bad",
+                    error: key + " is provided in " + providersSet.size + " modules, <br/> " + parse + ". <br/> This is so bad",
                     rule: rule_enum_1.RuleEnum.PROVIDE_SERVICE_IN_SINGLE_MODULE.toString()
                 });
                 validations.push(validation);
