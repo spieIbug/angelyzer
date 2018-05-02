@@ -16,7 +16,7 @@ export class ProvidersRefactorValidator implements Validator {
         const parse = JSON.stringify(providersSet);
         const validation = new Validation({
           className: key,
-          error: `${key} is provided in ${providersSet.size} modules, ${parse}. This is so bad`,
+          error: `${key} is provided in ${providersSet.size} modules, <br/> ${parse}. <br/> This is so bad`,
           rule: RuleEnum.PROVIDE_SERVICE_IN_SINGLE_MODULE.toString()
         });
         validations.push(validation);
