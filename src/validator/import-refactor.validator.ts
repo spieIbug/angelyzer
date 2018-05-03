@@ -4,6 +4,11 @@ import {RuleEnum} from '../model/rule.enum';
 import {Validator} from './validator';
 
 export class ImportRefactorValidator implements Validator {
+    /**
+     * Import refactor recommendations scan
+     * @param modules
+     * @returns {Validation[]}
+     */
     public validate(modules: AngularModule[]): Validation[] {
         const validations: Validation[] = [];
         const importsMap: Map<string, Set<string>> = this.getModulesImportsMap(modules);
@@ -40,7 +45,7 @@ export class ImportRefactorValidator implements Validator {
     }
 
     /**
-     * Excluse RoutingModule for RouterModule check if any other module import RouterModule it will be signaled
+     * Exclude RoutingModule for RouterModule check if any other module import RouterModule it will be signaled
      * to be refactored
      * @param aSet
      * @param moduleName

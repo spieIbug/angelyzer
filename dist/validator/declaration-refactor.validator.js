@@ -5,6 +5,11 @@ var rule_enum_1 = require("../model/rule.enum");
 var DeclarationRefactorValidator = /** @class */ (function () {
     function DeclarationRefactorValidator() {
     }
+    /**
+     * Check if a Component, Directive, Pipe is declared in multiple modules
+     * @param modules
+     * @returns {Validation[]}
+     */
     DeclarationRefactorValidator.prototype.validate = function (modules) {
         var validations = [];
         var declarationsMap = this.getModulesDeclarationsMap(modules);
@@ -13,10 +18,10 @@ var DeclarationRefactorValidator = /** @class */ (function () {
             var key = keys_1[_i];
             var declarationsSet = declarationsMap.get(key);
             if (declarationsSet.size > 1) {
-                var parse = JSON.stringify(declarationsSet);
+                var parse = JSON.stringify(declarationsSet, null, 2);
                 var validation = new validation_model_1.Validation({
                     className: key,
-                    error: key + " is declared in " + declarationsSet.size + " modules, " + parse + ". This is so bad",
+                    error: key + " is declared in " + declarationsSet.size + " modules, <code><pre>" + parse + "</pre></code> This is so bad",
                     rule: rule_enum_1.RuleEnum.COMPONENT_DIRECTIVE_PIPE_IN_SINGLE_MODULE.toString()
                 });
                 validations.push(validation);

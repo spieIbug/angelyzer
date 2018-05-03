@@ -1,5 +1,5 @@
 export const indexTemplate = () => {
-  return `<html>
+    return `<html>
 <head>
     <link href="style.css" rel="stylesheet">
     <meta charset="utf-8">

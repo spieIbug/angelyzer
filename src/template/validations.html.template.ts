@@ -1,11 +1,11 @@
-import { Validation } from '../model/validation.model';
+import {Validation} from '../model/validation.model';
 
 export const validationTemplate = (validations: Validation[]) => {
-  let content: string = '';
-  for (const validation of validations) {
-    content += `<tr><td>${validation.rule}</td><td>${validation.className}</td><td>${validation.error}</td></tr>`;
-  }
-  return `<!DOCTYPE html>
+    let content: string = '';
+    for (const validation of validations) {
+        content += `<tr><td>${validation.rule}</td><td>${validation.className}</td><td>${validation.error}</td></tr>`;
+    }
+    return `<!DOCTYPE html>
         <html>
             <head>
                 <link href="style.css" rel="stylesheet">

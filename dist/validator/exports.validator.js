@@ -6,6 +6,12 @@ var validation_model_1 = require("../model/validation.model");
 var ExportsValidator = /** @class */ (function () {
     function ExportsValidator() {
     }
+    /**
+     * Validate that exports contains only Component, Pipe, Directive or Module
+     * @param module
+     * @param ast
+     * @returns {Validation}
+     */
     ExportsValidator.prototype.validate = function (module, ast) {
         var listOfExportsViolations = [];
         for (var _i = 0, _a = module.exports; _i < _a.length; _i++) {

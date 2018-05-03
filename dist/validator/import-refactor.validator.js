@@ -5,6 +5,11 @@ var rule_enum_1 = require("../model/rule.enum");
 var ImportRefactorValidator = /** @class */ (function () {
     function ImportRefactorValidator() {
     }
+    /**
+     * Import refactor recommendations scan
+     * @param modules
+     * @returns {Validation[]}
+     */
     ImportRefactorValidator.prototype.validate = function (modules) {
         var validations = [];
         var importsMap = this.getModulesImportsMap(modules);
@@ -43,7 +48,7 @@ var ImportRefactorValidator = /** @class */ (function () {
         return importModulesMap;
     };
     /**
-     * Excluse RoutingModule for RouterModule check if any other module import RouterModule it will be signaled
+     * Exclude RoutingModule for RouterModule check if any other module import RouterModule it will be signaled
      * to be refactored
      * @param aSet
      * @param moduleName
