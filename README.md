@@ -1,7 +1,7 @@
 
 # Description 
 
-Angelyzer is a CLI that allows you to scan your angular app, and detect potentional problems.
+Angelyzer is a CLI that allows you to scan your angular app and detect potential problems.
 
 # How to use it ?
 

@@ -1,6 +1,6 @@
 import {Validator} from './validator';
 import {RuleEnum} from '../model/rule.enum';
-import {elementNotInWrightPlace, elementsNotInWrightPlace} from '../template/element-not-in-wright-place.template';
+import {elementNotInWrightPlace, elementsNotInWrightPlace} from '../template/element-not-in-right-place.template';
 import {AngularModule} from '../model/angular-module.model';
 import {Validation} from '../model/validation.model';
 

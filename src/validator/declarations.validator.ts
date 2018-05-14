@@ -1,5 +1,5 @@
 import {Validator} from './validator';
-import {elementNotInWrightPlace, elementsNotInWrightPlace} from '../template/element-not-in-wright-place.template';
+import {elementNotInWrightPlace, elementsNotInWrightPlace} from '../template/element-not-in-right-place.template';
 import {RuleEnum} from '../model/rule.enum';
 import {Validation} from '../model/validation.model';
 
