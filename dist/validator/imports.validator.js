@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_enum_1 = require("../model/rule.enum");
-var element_not_in_wright_place_template_1 = require("../template/element-not-in-wright-place.template");
+var element_not_in_right_place_template_1 = require("../template/element-not-in-right-place.template");
 var validation_model_1 = require("../model/validation.model");
 /**
  * Angular Modules Imports validator
@@ -20,14 +20,14 @@ var ImportsValidator = /** @class */ (function () {
         for (var _i = 0, _a = module.imports; _i < _a.length; _i++) {
             var anImport = _a[_i];
             if (!anImport.match(/.+Module$/)) {
-                listOfImportsViolations.push(element_not_in_wright_place_template_1.elementNotInWrightPlace(anImport, 'imports'));
+                listOfImportsViolations.push(element_not_in_right_place_template_1.elementNotInRightPlace(anImport, 'imports'));
             }
         }
         if (listOfImportsViolations.length > 0) {
             return new validation_model_1.Validation({
                 rule: rule_enum_1.RuleEnum.IMPORT_NON_MODULE.toString(),
                 className: module.name,
-                error: element_not_in_wright_place_template_1.elementsNotInWrightPlace(listOfImportsViolations)
+                error: element_not_in_right_place_template_1.elementsNotInRightPlace(listOfImportsViolations)
             });
         }
         return null;

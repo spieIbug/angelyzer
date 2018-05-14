@@ -1,5 +1,5 @@
 import {Validator} from './validator';
-import {elementNotInWrightPlace, elementsNotInWrightPlace} from '../template/element-not-in-right-place.template';
+import {elementNotInRightPlace, elementsNotInRightPlace} from '../template/element-not-in-right-place.template';
 import {RuleEnum} from '../model/rule.enum';
 import {Validation} from '../model/validation.model';
 
@@ -19,14 +19,14 @@ export class DeclarationsValidator implements Validator {
         const listOfDeclarationsViolations = [];
         for (const declaration of module.declarations) {
             if (!declaration.match(/.+(Component|Pipe|Directive)$/)) {
-                listOfDeclarationsViolations.push(elementNotInWrightPlace(declaration, 'declarations'));
+                listOfDeclarationsViolations.push(elementNotInRightPlace(declaration, 'declarations'));
             }
         }
         if (listOfDeclarationsViolations.length > 0) {
             return new Validation({
                 rule: RuleEnum.ELEMENT_CAN_NOT_BE_DECLARED.toString(),
                 className: module.name,
-                error: elementsNotInWrightPlace(listOfDeclarationsViolations)
+                error: elementsNotInRightPlace(listOfDeclarationsViolations)
             });
         }
         return null;

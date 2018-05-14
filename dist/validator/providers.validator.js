@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var element_not_in_wright_place_template_1 = require("../template/element-not-in-wright-place.template");
+var element_not_in_right_place_template_1 = require("../template/element-not-in-right-place.template");
 var rule_enum_1 = require("../model/rule.enum");
 var validation_model_1 = require("../model/validation.model");
 /**
@@ -22,14 +22,14 @@ var ProvidersValidator = /** @class */ (function () {
         for (var _i = 0, _a = module.providers; _i < _a.length; _i++) {
             var provider = _a[_i];
             if (provider.match(/.+(Component|Pipe|Directive|Module)$/)) {
-                listOfProvidersViolations.push(element_not_in_wright_place_template_1.elementNotInWrightPlace(provider, 'providers'));
+                listOfProvidersViolations.push(element_not_in_right_place_template_1.elementNotInRightPlace(provider, 'providers'));
             }
         }
         if (listOfProvidersViolations.length > 0) {
             return new validation_model_1.Validation({
                 rule: rule_enum_1.RuleEnum.ELEMENT_CAN_NOT_BE_PROVIDED.toString(),
                 className: module.name,
-                error: element_not_in_wright_place_template_1.elementsNotInWrightPlace(listOfProvidersViolations)
+                error: element_not_in_right_place_template_1.elementsNotInRightPlace(listOfProvidersViolations)
             });
         }
         return null;
