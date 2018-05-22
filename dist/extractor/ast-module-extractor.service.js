@@ -230,7 +230,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             }
                             // todo: handle useFactory, useExisting
                         }
-                        else { // cas Identifier
+                        else {
                             values.push(val.name);
                         }
                     }

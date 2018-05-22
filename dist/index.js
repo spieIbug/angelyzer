@@ -17,6 +17,10 @@ commander.command('scan <modulePath> <savePath>').description('Scan an angular p
     mkdirp.sync(effectiveSavePath);
     var scanner = new scanner_1.Scanner();
     fs.readdir(modulePath, function (err, files) { return scanner.scanPath(files, modulePath, effectiveSavePath); });
+})
+    .on('command:*', function () {
+    console.error('Invalid command: %s\nSee --help for a list of available commands.', commander.args.join(' '));
+    process.exit();
 });
 if (!process.argv.slice(2).length) {
     commander.outputHelp();

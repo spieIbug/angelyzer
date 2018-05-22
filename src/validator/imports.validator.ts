@@ -1,6 +1,6 @@
 import {Validator} from './validator';
 import {RuleEnum} from '../model/rule.enum';
-import {elementNotInWrightPlace, elementsNotInWrightPlace} from '../template/element-not-in-wright-place.template';
+import {elementNotInRightPlace, elementsNotInRightPlace} from '../template/element-not-in-right-place.template';
 import {Validation} from '../model/validation.model';
 import {AngularModule} from '../model/angular-module.model';
 /**
@@ -17,14 +17,14 @@ export class ImportsValidator implements Validator {
         const listOfImportsViolations = [];
         for (const anImport of module.imports) {
             if (!anImport.match(/.+Module$/)) {
-                listOfImportsViolations.push(elementNotInWrightPlace(anImport, 'imports'));
+                listOfImportsViolations.push(elementNotInRightPlace(anImport, 'imports'));
             }
         }
         if (listOfImportsViolations.length > 0) {
             return new Validation({
                 rule: RuleEnum.IMPORT_NON_MODULE.toString(),
                 className: module.name,
-                error: elementsNotInWrightPlace(listOfImportsViolations)
+                error: elementsNotInRightPlace(listOfImportsViolations)
             });
         }
         return null;

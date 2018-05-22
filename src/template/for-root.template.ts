@@ -11,6 +11,6 @@ export const forRootRecommandationTemplate = (module: AngularModule) => (
     };
   }</pre>
     </code>Or define a CoreModule that only provide <br/>${JSON.stringify(module.providers, null, 2)}<br/>
-    Becarefull : the forRoot is for AppModule not children.<br/>
+    Be careful : the forRoot is for AppModule only, not children.<br/>
     <a href="https://angular.io/guide/singleton-services">@see</a> & <a href="https://angular.io/guide/ngmodule-faq#why-is-it-bad-if-a-shared-module-provides-a-service-to-a-lazy-loaded-module">@see</a>`
 );
