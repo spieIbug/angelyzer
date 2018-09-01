@@ -15,6 +15,7 @@ import { DeclarationRefactorValidator } from './validator/declaration-refactor.v
 import { ProvidersRefactorValidator } from './validator/providers-refactor.validator';
 import { indexTemplate } from './template/index.html.template';
 import { cssTemplate } from './template/style.css.template';
+import { VoidElementValidator } from './validator/void-element.validator';
 
 const fs = require('fs');
 
@@ -30,6 +31,7 @@ export class Scanner {
   private importRefactorValidator: ImportRefactorValidator;
   private declarationRefactorValidator: DeclarationRefactorValidator;
   private providersRefactorValidator: ProvidersRefactorValidator;
+  private voidElementValidator: VoidElementValidator;
 
   private modules: AngularModule[] = [];
   private fileCount: number = 0;
@@ -47,6 +49,7 @@ export class Scanner {
     this.importRefactorValidator = new ImportRefactorValidator();
     this.declarationRefactorValidator = new DeclarationRefactorValidator();
     this.providersRefactorValidator = new ProvidersRefactorValidator();
+    this.voidElementValidator = new VoidElementValidator();
   }
 
   public scanPath(files: string[], modulePath: string, savePath: string): void {
@@ -66,12 +69,14 @@ export class Scanner {
       const importRefactorValidations = this.importRefactorValidator.validate(this.modules);
       const declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
       const providersRefactorValidations = this.providersRefactorValidator.validate(this.modules);
+      const voidRefactorValidations = this.voidElementValidator.validate(this.modules);
+
       fs.writeFileSync(savePath + '/index.html', indexTemplate());
       fs.writeFileSync(savePath + '/style.css', cssTemplate());
       fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
       fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync(savePath + '/validations.html', validationTemplate(this.validations));
-      fs.writeFileSync(savePath + '/refactor.html', refactorTemplate(importRefactorValidations));
+      fs.writeFileSync(savePath + '/refactor.html', refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
       fs.writeFileSync(savePath + '/declarations.html', refactorTemplate(declarationRefactorValidations));
       fs.writeFileSync(savePath + '/providers.html', refactorTemplate(providersRefactorValidations));
       fs.writeFileSync(savePath + '/code.js', graphJSTemplate(graph));

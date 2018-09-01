@@ -5,5 +5,6 @@ export declare class AngularModule {
     declarations: string[];
     bootstrap: string[];
     providers: string[];
+    hasVoidElement: boolean;
     constructor(params: Partial<AngularModule>);
 }

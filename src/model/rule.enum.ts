@@ -10,4 +10,5 @@ export enum RuleEnum {
   PROVIDE_SERVICE_IN_SINGLE_MODULE = <any> 'A service must appear in providers of only one module',
   COMPONENT_DIRECTIVE_PIPE_IN_SINGLE_MODULE = <any> 'A component, directive, pipe must appear in declarations of only one module',
   MODULE_MULTIPLE_IMPORT_REFACTOR = <any> 'A module imported, many times, goes in a SharedModule',
+  NO_VOID_ELEMENT_IN_MODULE_DEFINITION = <any> 'A module must not import, export, declare or provide an empty list of element',
 }

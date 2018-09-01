@@ -19,12 +19,12 @@ var ASTModuleExtractorService = /** @class */ (function () {
                 var name_1 = this.extractModuleName(node);
                 var decorator = this.extractNgModuleDecorator(node);
                 var imports = this.extractImports(decorator, nodes);
-                var declarations = this.extractDeclarations(decorator, nodes);
+                var _a = this.extractDeclarations(decorator, nodes), declarations = _a.declarations, hasVoidDeclaration = _a.hasVoidDeclaration;
                 var providers = this.extractProviders(decorator, nodes);
                 var bootstrap = this.extractBootStrap(decorator);
                 var exports_1 = this.extractExports(decorator, nodes);
                 return new angular_module_model_1.AngularModule({
-                    name: name_1, bootstrap: bootstrap, imports: imports, declarations: declarations, providers: providers, exports: exports_1
+                    name: name_1, bootstrap: bootstrap, imports: imports, declarations: declarations, providers: providers, exports: exports_1, hasVoidElement: (hasVoidDeclaration)
                 });
             }
         }
@@ -157,9 +157,14 @@ var ASTModuleExtractorService = /** @class */ (function () {
      */
     ASTModuleExtractorService.prototype.extractDeclarations = function (decorator, programBody) {
         var declarations = [];
+        var hasVoidDeclaration = false;
         for (var _i = 0, _a = decorator.properties; _i < _a.length; _i++) {
             var property = _a[_i];
             if (property.key.name === 'declarations') {
+                if (!property.value.elements) {
+                    hasVoidDeclaration = true;
+                    continue;
+                }
                 for (var _b = 0, _c = property.value.elements; _b < _c.length; _b++) {
                     var element = _c[_b];
                     switch (element.type) {
@@ -179,7 +184,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                 }
             }
         }
-        return declarations;
+        return { declarations: declarations, hasVoidDeclaration: hasVoidDeclaration };
     };
     /**
      * Extract bootstrap properties form NgModule decorator
