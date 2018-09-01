@@ -9,6 +9,7 @@ export declare class Scanner {
     private importRefactorValidator;
     private declarationRefactorValidator;
     private providersRefactorValidator;
+    private voidElementValidator;
     private modules;
     private fileCount;
     private validations;

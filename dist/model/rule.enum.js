@@ -13,4 +13,5 @@ var RuleEnum;
     RuleEnum[RuleEnum["PROVIDE_SERVICE_IN_SINGLE_MODULE"] = 'A service must appear in providers of only one module'] = "PROVIDE_SERVICE_IN_SINGLE_MODULE";
     RuleEnum[RuleEnum["COMPONENT_DIRECTIVE_PIPE_IN_SINGLE_MODULE"] = 'A component, directive, pipe must appear in declarations of only one module'] = "COMPONENT_DIRECTIVE_PIPE_IN_SINGLE_MODULE";
     RuleEnum[RuleEnum["MODULE_MULTIPLE_IMPORT_REFACTOR"] = 'A module imported, many times, goes in a SharedModule'] = "MODULE_MULTIPLE_IMPORT_REFACTOR";
+    RuleEnum[RuleEnum["NO_VOID_ELEMENT_IN_MODULE_DEFINITION"] = 'A module must not import, export, declare or provide an empty list of element'] = "NO_VOID_ELEMENT_IN_MODULE_DEFINITION";
 })(RuleEnum = exports.RuleEnum || (exports.RuleEnum = {}));

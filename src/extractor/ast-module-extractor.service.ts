@@ -21,12 +21,12 @@ export class ASTModuleExtractorService {
                 const name = this.extractModuleName(node);
                 const decorator = this.extractNgModuleDecorator(node);
                 const imports = this.extractImports(decorator, nodes);
-                const declarations = this.extractDeclarations(decorator, nodes);
+                const { declarations, hasVoidDeclaration } = this.extractDeclarations(decorator, nodes);
                 const providers = this.extractProviders(decorator, nodes);
                 const bootstrap = this.extractBootStrap(decorator);
                 const exports = this.extractExports(decorator, nodes);
                 return new AngularModule({
-                    name, bootstrap, imports, declarations, providers, exports
+                    name, bootstrap, imports, declarations, providers, exports, hasVoidElement: (hasVoidDeclaration)
                 });
             }
         }
@@ -161,10 +161,15 @@ export class ASTModuleExtractorService {
      * @param programBody
      * @returns {Array}
      */
-    private extractDeclarations(decorator: any, programBody: any): string[] {
+    private extractDeclarations(decorator: any, programBody: any): {declarations: string[], hasVoidDeclaration: boolean} {
         const declarations = [];
+        let hasVoidDeclaration = false;
         for (const property of decorator.properties) {
             if (property.key.name === 'declarations') {
+                if (!property.value.elements) {
+                    hasVoidDeclaration = true;
+                    continue;
+                }
                 for (const element of property.value.elements) {
                     switch (element.type) {
                         case 'Identifier': {
@@ -183,7 +188,7 @@ export class ASTModuleExtractorService {
                 }
             }
         }
-        return declarations;
+        return {declarations, hasVoidDeclaration};
     }
 
     /**

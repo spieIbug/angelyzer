@@ -15,6 +15,7 @@ var declaration_refactor_validator_1 = require("./validator/declaration-refactor
 var providers_refactor_validator_1 = require("./validator/providers-refactor.validator");
 var index_html_template_1 = require("./template/index.html.template");
 var style_css_template_1 = require("./template/style.css.template");
+var void_element_validator_1 = require("./validator/void-element.validator");
 var fs = require('fs');
 var Scanner = /** @class */ (function () {
     function Scanner() {
@@ -31,6 +32,7 @@ var Scanner = /** @class */ (function () {
         this.importRefactorValidator = new import_refactor_validator_1.ImportRefactorValidator();
         this.declarationRefactorValidator = new declaration_refactor_validator_1.DeclarationRefactorValidator();
         this.providersRefactorValidator = new providers_refactor_validator_1.ProvidersRefactorValidator();
+        this.voidElementValidator = new void_element_validator_1.VoidElementValidator();
     }
     Scanner.prototype.scanPath = function (files, modulePath, savePath) {
         var _this = this;
@@ -50,12 +52,13 @@ var Scanner = /** @class */ (function () {
             var importRefactorValidations = this.importRefactorValidator.validate(this.modules);
             var declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
             var providersRefactorValidations = this.providersRefactorValidator.validate(this.modules);
+            var voidRefactorValidations = this.voidElementValidator.validate(this.modules);
             fs.writeFileSync(savePath + '/index.html', index_html_template_1.indexTemplate());
             fs.writeFileSync(savePath + '/style.css', style_css_template_1.cssTemplate());
             fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
             fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
             fs.writeFileSync(savePath + '/validations.html', validations_html_template_1.validationTemplate(this.validations));
-            fs.writeFileSync(savePath + '/refactor.html', refactor_html_template_1.refactorTemplate(importRefactorValidations));
+            fs.writeFileSync(savePath + '/refactor.html', refactor_html_template_1.refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
             fs.writeFileSync(savePath + '/declarations.html', refactor_html_template_1.refactorTemplate(declarationRefactorValidations));
             fs.writeFileSync(savePath + '/providers.html', refactor_html_template_1.refactorTemplate(providersRefactorValidations));
             fs.writeFileSync(savePath + '/code.js', code_js_template_1.graphJSTemplate(graph));
