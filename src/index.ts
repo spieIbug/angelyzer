@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import './polyfills';
 import * as commander from 'commander';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {Scanner} from './scanner';
 import fs = require('fs')
 const mkdirp = require('mkdirp');
@@ -24,7 +24,10 @@ commander.command('scan <modulePath> <savePath>').description('Scan an angular p
         console.log(chalk.yellow(`Scanning ${modulePath}`));
         mkdirp.sync(effectiveSavePath);
         const scanner = new Scanner();
-        fs.readdir(modulePath, (err, files) => scanner.scanPath(files, modulePath, effectiveSavePath));
+        fs.readdir(modulePath, (err, files) => {
+            scanner.scanComponents(files, modulePath, effectiveSavePath);
+            scanner.scanModules(files, modulePath, effectiveSavePath);
+        });
     })
     .on('command:*', () => {
         console.error('Invalid command: %s\nSee --help for a list of available commands.', commander.args.join(' '));

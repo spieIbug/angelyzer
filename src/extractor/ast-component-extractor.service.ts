@@ -41,7 +41,7 @@ export class ASTComponentExtractorService extends AstExtractorService {
     return new Method({
       name: method.key.name,
       visibility: method.accessibility || 'public',
-      params: map(get(method, 'params', []), param => this.getParamValue(param)),
+      parameters: map(get(method, 'params', []), param => this.getParamValue(param)),
       static: !!method.static,
       returns: this.extractTypeAsString(get(method, 'returnType.typeAnnotation')),
     });

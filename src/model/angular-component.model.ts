@@ -14,7 +14,7 @@ export class Method {
   name: string;
   visibility: 'public' | 'private' | 'protected';
   static= false;
-  params: Param[];
+  parameters: Param[];
   returns : string;
 
   constructor(method?: Partial<Method>) {

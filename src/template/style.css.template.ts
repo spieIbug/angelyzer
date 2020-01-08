@@ -1,5 +1,6 @@
 export const cssTemplate = () => {
-  return `body {
+  return `
+  body {
     font: 14px helvetica neue, helvetica, arial, sans-serif;
 }
 .toolbar {
@@ -76,12 +77,14 @@ export const cssTemplate = () => {
     text-decoration: none;
 }
 
-#cy {
+.container {
     height: 100%;
     width: 100%;
     position: absolute;
     left: 0;
-    top: 0;
+    top: 65px;
+    display: flex;
+    flex: 1 1 auto;
 }
 
 table {
@@ -122,5 +125,12 @@ pre {
 }
 .sticky + .content {
     padding-top: 60px;
-}`;
+}
+ul#navigation-menu {
+    height: 600px;
+    overflow-y: auto;
+    list-style-type: none;
+}
+}
+  `;
 };
