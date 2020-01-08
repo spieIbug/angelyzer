@@ -33,14 +33,16 @@
   },
   "homepage": "https://github.com/meyacine/angelyzer#readme",
   "dependencies": {
-    "chalk": "^2.3.2",
+    "babylon": "^7.0.0-beta.47",
+    "chalk": "^3.0.0",
     "commander": "^2.15.1",
     "core-js": "^2.5.4",
     "fs-extra": "^5.0.0",
+    "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "ora": "^2.0.0",
-    "recast": "^0.14.7",
-    "typescript": "^2.7.2",
+    "recast": "^0.18.5",
+    "typescript": "^3.7.4",
     "typescript-eslint-parser": "^14.0.0"
   },
   "devDependencies": {
