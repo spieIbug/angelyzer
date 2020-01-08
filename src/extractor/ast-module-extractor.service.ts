@@ -1,9 +1,7 @@
 import {AngularModule} from '../model/angular-module.model';
-import fs = require('fs');
-import recast = require('recast');
+import {AstExtractorService} from './ast-extractor.service';
 
-
-export class ASTModuleExtractorService {
+export class ASTModuleExtractorService extends AstExtractorService {
 
     /**
      * Read an Angular Module fileContent and return AngularModule instance containing Decorator properties
@@ -34,24 +32,14 @@ export class ASTModuleExtractorService {
 
     }
 
-    /**
-     * Extracts Abstract Syntax Tree for typescript
-     * @param fileContent
-     */
-    public getAST(fileContent: string) {
-        return recast.parse(fileContent, {
-            parser: require("typescript-eslint-parser")
-        });
-    }
-
     private extractModuleName(node: any /*ExportNamedDeclaration | ClassDeclaration*/): string {
         return node.declaration.id.name;
     }
 
     private extractNgModuleDecorator(node: any /*ExportNamedDeclaration | ClassDeclaration*/)/*ObjectExpression*/ {
         for (const decorator of node.declaration.decorators) {
-            if (decorator.expression.callee.name === 'NgModule') {
-                return decorator.expression.arguments[0];
+            if (decorator.callee.callee.name === 'NgModule') {
+                return decorator.callee.arguments[0];
             }
         }
     }

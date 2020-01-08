@@ -16,6 +16,11 @@ import { ProvidersRefactorValidator } from './validator/providers-refactor.valid
 import { indexTemplate } from './template/index.html.template';
 import { cssTemplate } from './template/style.css.template';
 import { VoidElementValidator } from './validator/void-element.validator';
+import { Logger } from './logger';
+import { AngularComponent } from './model/angular-component.model';
+import { ASTComponentExtractorService } from './extractor/ast-component-extractor.service';
+import { ComponentMapper } from './mapper/component.mapper';
+import {umlJSTemplate} from "./template/uml.js.template";
 
 const fs = require('fs');
 
@@ -23,6 +28,7 @@ export class Scanner {
 
   private graphService: GraphExtractorService;
   private astModuleExtractorService: ASTModuleExtractorService;
+  private astComponentExtractorService: ASTComponentExtractorService;
   private coreModuleValidation: CoreModuleValidator;
   private providersValidator: ProvidersValidator;
   private importsValidator: ImportsValidator;
@@ -34,12 +40,16 @@ export class Scanner {
   private voidElementValidator: VoidElementValidator;
 
   private modules: AngularModule[] = [];
-  private fileCount: number = 0;
+  private components: AngularComponent[] = [];
+  private moduleFilesCount: number = 0;
+  private componentFilesCount: number = 0;
   private validations: Validation[] = [];
+  private componentMapper: ComponentMapper;
 
 
   constructor() {
     this.astModuleExtractorService = new ASTModuleExtractorService();
+    this.astComponentExtractorService = new ASTComponentExtractorService();
     this.graphService = new GraphExtractorService();
     this.coreModuleValidation = new CoreModuleValidator();
     this.providersValidator = new ProvidersValidator();
@@ -50,19 +60,38 @@ export class Scanner {
     this.declarationRefactorValidator = new DeclarationRefactorValidator();
     this.providersRefactorValidator = new ProvidersRefactorValidator();
     this.voidElementValidator = new VoidElementValidator();
+    this.componentMapper = new ComponentMapper();
   }
 
-  public scanPath(files: string[], modulePath: string, savePath: string): void {
+  public scanComponents(files: string[], componentPath: string, savePath: string): void {
     if (files) {
+      files.forEach(file => {
+        const fullQualifierPath = componentPath + '/' + file;
+        if (fs.lstatSync(fullQualifierPath).isFile()) {
+          // scan uniquement de composants
+          if (fullQualifierPath.indexOf('component.ts') !== -1) {
+            this.processComponentFile(fullQualifierPath);
+          }
+        } else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
+          fs.readdir(fullQualifierPath, (err, files) => this.scanComponents(files, fullQualifierPath, savePath));
+        }
+      })
+    }
+  }
+
+  public scanModules(files: string[], modulePath: string, savePath: string): void {
+    if (files) {
+      // todo: refactor this part using filte-type.enum.ts
       files.forEach(file => {
         const fullQualifierPath = modulePath + '/' + file;
         if (fs.lstatSync(fullQualifierPath).isFile()) {
           // scan uniquement de modules
-          if (fullQualifierPath.indexOf('module.ts') !== -1) this.processFile(fullQualifierPath);
+          if (fullQualifierPath.indexOf('module.ts') !== -1) this.processModuleFile(fullQualifierPath);
         } else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
-          fs.readdir(fullQualifierPath, (err, files) => this.scanPath(files, fullQualifierPath, savePath));
+          fs.readdir(fullQualifierPath, (err, files) => this.scanModules(files, fullQualifierPath, savePath));
         }
       });
+      // end todo
 
       const graph = this.graphService.computeGraph(this.modules);
 
@@ -73,7 +102,10 @@ export class Scanner {
 
       fs.writeFileSync(savePath + '/index.html', indexTemplate());
       fs.writeFileSync(savePath + '/style.css', cssTemplate());
+      fs.writeFileSync(savePath + '/uml.js', umlJSTemplate());
       fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
+      fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.componentMapper.toGraphs(this.components), null, 2));
+      fs.writeFileSync(savePath + '/components.js', 'var components = ' + JSON.stringify(this.components, null, 2));
       fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync(savePath + '/validations.html', validationTemplate(this.validations));
       fs.writeFileSync(savePath + '/refactor.html', refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
@@ -85,15 +117,28 @@ export class Scanner {
     }
   }
 
-  private processFile(inputFile: string) {
-    this.fileCount++;
-    const fileContent = fs.readFileSync(inputFile, 'utf-8');
-    console.log(this.fileCount, ' scanning file :', inputFile);
+  /**
+   * Scan component.ts file
+   * @param inputFile
+   */
+  private processComponentFile(inputFile: string) {
+    console.log(inputFile);
+    this.componentFilesCount++;
+    const componentFileContent = fs.readFileSync(inputFile, 'utf-8');
+    Logger.info(`${this.componentFilesCount} scanning component file ${inputFile}`);
+    const angularComponent = <AngularComponent>this.astComponentExtractorService.extractComponent(componentFileContent);
+    this.components.push(angularComponent);
+  }
+
+  private processModuleFile(inputFile: string) {
+    this.moduleFilesCount++;
+    const moduleFileContent = fs.readFileSync(inputFile, 'utf-8');
+    console.log(this.moduleFilesCount, ' scanning file :', inputFile);
     // read module
-    const angularModule = <AngularModule> this.astModuleExtractorService.extractModule(fileContent);
+    const angularModule = <AngularModule>this.astModuleExtractorService.extractModule(moduleFileContent);
     this.modules.push(angularModule);
     //
-    const coreSharedModulePatternValidation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(fileContent));
+    const coreSharedModulePatternValidation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(moduleFileContent));
     const providersValidation = this.providersValidator.validate(angularModule);
     const exportsValidation = this.exportsValidator.validate(angularModule);
     const importsValidation = this.importsValidator.validate(angularModule);

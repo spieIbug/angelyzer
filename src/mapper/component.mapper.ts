@@ -12,20 +12,23 @@ export class ComponentMapper {
         properties: component.properties,
         methods: component.methods,
       }),
-      new UMLNode({key: component.extends, name: component.extends}),
       ...map(component.dependencies, dep => new UMLNode({key: dep.type, name: dep.type})),
     ];
+    if (component.extends) {
+      uml.nodes.push(new UMLNode({key: component.extends, name: component.extends}));
+    }
 
     uml.links = [
       ...map(component.dependencies, dep => new UMLLink({ from: component.name, to: dep.type, relationship: 'aggregation' })),
       ...map(component.implements, implem => new UMLLink({ from: component.name, to: implem, relationship: 'generalization' })),
-      new UMLLink({
+    ];
+    if (component.extends) {
+      uml.links.push(new UMLLink({
         from: component.name,
         to: component.extends,
         relationship: 'generalization',
-      })
-    ];
-
+      }));
+    }
     return uml;
   }
 
