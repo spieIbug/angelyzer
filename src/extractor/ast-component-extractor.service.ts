@@ -1,23 +1,15 @@
-import { AngularComponent, Dependency, Input, Method, Param, Property } from '../model/angular-component.model';
-import { forEach, find, map, get, filter, flattenDeep, intersect } from 'lodash';
-import { AstExtractorService } from './ast-extractor.service';
+import {AngularComponent, Input} from '../model/angular-component.model';
+import {filter, forEach, get, map} from 'lodash';
+import {AstClassExtractorService} from "./ast-class-extractor.service";
 
-export class ASTComponentExtractorService extends AstExtractorService {
+export class ASTComponentExtractorService extends AstClassExtractorService {
 
-  public extractComponent(fileContent: string): AngularComponent {
+  extractComponent(fileContent: string): AngularComponent {
+    const component = new AngularComponent(this.extractClass(fileContent));
     const ast = this.getAST(fileContent);
     let nodes = ast.program.body;
-    const component = new AngularComponent();
     forEach(nodes, (node/*: ExportNamedDeclaration*/) => {
         if (node.type === 'ExportNamedDeclaration' && node.declaration.type === 'ClassDeclaration') {
-          component.name = node.declaration.id.name;
-          component.implements = map(node.declaration.implements, implem => implem.expression.name);
-          component.extends = get(node.declaration, 'superClass.name');
-          component.properties = map(filter(node.declaration.body.body, p => p.type === 'ClassProperty' && !this.isInput(p) && !this.isOutput(p)), p => new Property({
-            name: p.key.name,
-            visibility: p.accessibility || 'public',
-            type: this.extractTypeAsString(get(p, 'typeAnnotation.typeAnnotation')),
-          }));
           component.inputs = map(filter(node.declaration.body.body, p => p.type === 'ClassProperty' && this.isInput(p)), p => new Input({
             name: p.key.name,
             type: this.extractTypeAsString(get(p, 'typeAnnotation.typeAnnotation')),
@@ -26,10 +18,6 @@ export class ASTComponentExtractorService extends AstExtractorService {
             name: p.key.name,
             type: this.extractTypeAsString(get(p, 'typeAnnotation.typeAnnotation')),
           }));
-          component.methods = map(filter(node.declaration.body.body, m => m.type === 'ClassMethod' && m.key.name !== 'constructor'), m => this.extractMethodDefinition(m));
-
-          const constructorBlock = find(node.declaration.body.body, m => m.type === 'ClassMethod' && m.key.name === 'constructor');
-          component.dependencies = this.extractDependencies(constructorBlock);
         }
       }
     );
@@ -50,52 +38,5 @@ export class ASTComponentExtractorService extends AstExtractorService {
     return p.decorators.map(d => d.callee.callee.name).includes('Output');
   }
 
-  extractDependencies(constructorMethod /*ClassBody body[]*/) : Dependency[] {
-    const dependancies = get(constructorMethod, 'params', []);
-    return dependancies.map(dep => {
-      return new Dependency({
-        name: get(dep, 'parameter.name', dep.name),
-        type: get(dep, 'parameter.typeAnnotation.typeAnnotation.typeName.name', get(dep, 'typeAnnotation.typeAnnotation.typeName.name'), 'any'),
-        visibility: get(dep, 'accessibility', 'public'),
-      });
-    });
-  }
 
-  private extractMethodDefinition(method /*ClassBody body[]*/): Method {
-    return new Method({
-      name: method.key.name,
-      visibility: method.accessibility || 'public',
-      parameters: map(get(method, 'params', []), param => this.getParamValue(param)),
-      static: !!method.static,
-      returns: this.extractTypeAsString(get(method, 'returnType.typeAnnotation')),
-    });
-  }
-
-  private extractTypeAsString(paramType /*TSTypeReference*/) : string {
-    let typeParams = get(paramType, 'typeParameters.params', []);
-    if (typeParams.length === 0) {
-      return get(paramType, 'typeName.name');
-    } else {
-      let types = flattenDeep([get(paramType, 'typeName.name'), ...typeParams.map(subType => this.extractTypeAsString(subType))]);
-      return types.join('<') + new Array(types.length - 1).fill(undefined).map(() => '>').join('');
-    }
-  }
-
-  getParamValue(param /*Param*/) : Param {
-    if (param.type === 'AssignmentPattern') {
-      return new Param({
-        name: get(param, 'left.name', param.name),
-        type: get(param, 'typeAnnotation.typeAnnotation.typeName.name', 'any'),
-        value: get(param, 'right.property.name', param.right.name),
-        visibility: get(param, 'accessibility', 'public'),
-      });
-    }
-
-    return new Param({
-      name: get(param, 'parameter.name', param.name),
-      type: get(param, 'parameter.typeAnnotation.typeAnnotation.typeName.name', get(param, 'typeAnnotation.typeAnnotation.typeName.name'), 'any'),
-      value: undefined,
-      visibility: get(param, 'accessibility', 'public'),
-    });
-  }
 }

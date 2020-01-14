@@ -17,10 +17,11 @@ import { indexTemplate } from './template/index.html.template';
 import { cssTemplate } from './template/style.css.template';
 import { VoidElementValidator } from './validator/void-element.validator';
 import { Logger } from './logger';
-import { AngularComponent } from './model/angular-component.model';
+import {AngularComponent, TSClass} from './model/angular-component.model';
 import { ASTComponentExtractorService } from './extractor/ast-component-extractor.service';
 import { ComponentMapper } from './mapper/component.mapper';
 import {umlJSTemplate} from "./template/uml.js.template";
+import {ClassMapper} from "./mapper/class.mapper";
 const fs = require('fs');
 
 export class Scanner {
@@ -39,11 +40,14 @@ export class Scanner {
   private voidElementValidator: VoidElementValidator;
   private validations: Validation[] = [];
   private componentMapper: ComponentMapper;
+  private classMapper: ClassMapper;
 
   private modules: AngularModule[] = [];
   private components: AngularComponent[] = [];
+  private classes: TSClass[] = [];
   private moduleFilesCount: number = 0;
   private componentFilesCount: number = 0;
+  private filesCount: number = 0;
 
   constructor() {
     this.astModuleExtractorService = new ASTModuleExtractorService();
@@ -59,6 +63,7 @@ export class Scanner {
     this.providersRefactorValidator = new ProvidersRefactorValidator();
     this.voidElementValidator = new VoidElementValidator();
     this.componentMapper = new ComponentMapper();
+    this.classMapper = new ClassMapper();
   }
 
   public scanComponents(files: string[], componentPath: string, savePath: string): void {
@@ -72,6 +77,22 @@ export class Scanner {
           }
         } else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
           fs.readdir(fullQualifierPath, (err, files) => this.scanComponents(files, fullQualifierPath, savePath));
+        }
+      })
+    }
+  }
+
+  public scanFiles(files: string[], path: string, savePath: string, suffix: string): void {
+    if (files) {
+      files.forEach(file => {
+        const fullQualifierPath = path + '/' + file;
+        if (fs.lstatSync(fullQualifierPath).isFile()) {
+          // scan uniquement de composants
+          if (fullQualifierPath.indexOf(suffix) !== -1) {
+            this.processFile(fullQualifierPath);
+          }
+        } else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
+          fs.readdir(fullQualifierPath, (err, files) => this.scanFiles(files, fullQualifierPath, savePath, suffix));
         }
       })
     }
@@ -102,8 +123,9 @@ export class Scanner {
       fs.writeFileSync(savePath + '/style.css', cssTemplate());
       fs.writeFileSync(savePath + '/uml.js', umlJSTemplate());
       fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
-      fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.componentMapper.toGraphs(this.components), null, 2));
       fs.writeFileSync(savePath + '/components.js', 'var components = ' + JSON.stringify(this.components, null, 2));
+      fs.writeFileSync(savePath + '/classes.js', 'var classes = ' + JSON.stringify(this.classes, null, 2));
+      fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.classMapper.toGraphs(this.classes), null, 2));
       fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync(savePath + '/validations.html', validationTemplate(this.validations));
       fs.writeFileSync(savePath + '/refactor.html', refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
@@ -125,6 +147,14 @@ export class Scanner {
     Logger.info(`${this.componentFilesCount} scanning component file ${inputFile}`);
     const angularComponent = <AngularComponent>this.astComponentExtractorService.extractComponent(componentFileContent);
     this.components.push(angularComponent);
+  }
+
+  private processFile(inputFile: string) {
+    this.filesCount++;
+    const fileContent = fs.readFileSync(inputFile, 'utf-8');
+    Logger.info(`${this.filesCount} scanning file ${inputFile}`);
+    const clazz = <TSClass>this.astComponentExtractorService.extractClass(fileContent);
+    this.classes.push(clazz);
   }
 
   private processModuleFile(inputFile: string) {

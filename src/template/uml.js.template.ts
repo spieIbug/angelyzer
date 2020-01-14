@@ -1,4 +1,5 @@
 export const umlJSTemplate = () => (`
+
 var $ = go.GraphObject.make;
 myDiagram = $(go.Diagram, "uml", {
     "undoManager.isEnabled": true,
@@ -30,7 +31,7 @@ function convertVisibility(v) {
 }
 
 function load() {
-    document.getElementById('navigation-menu').innerHTML = components.map((cmp, index) => '<li><a href="#' + cmp.name + '" onclick="javascript:loadData(' + index + ')">' + cmp.name + '</a></li>').join('\\n');
+    document.getElementById('navigation-menu').innerHTML = classes.map((cmp, index) => '<li><a href="#' + cmp.name + '" onclick="javascript:loadData(' + index + ')">' + cmp.name + '</a></li>').join('\\n');
     loadData(0)
 }
 
@@ -304,5 +305,4 @@ myDiagram.linkTemplate = $(go.Link,
         new go.Binding("toArrow", "relationship", convertToArrow))
 );
 load();
-
 `);

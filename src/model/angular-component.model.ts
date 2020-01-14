@@ -9,7 +9,6 @@ export class Property {
     Object.assign(this, obj);
   }
 }
-
 export class Method {
   name: string;
   visibility: 'public' | 'private' | 'protected';
@@ -21,7 +20,6 @@ export class Method {
     Object.assign(this, method);
   }
 }
-
 export class Param {
   name: string;
   visibility: 'public' | 'private' | 'protected';
@@ -32,7 +30,26 @@ export class Param {
     Object.assign(this, param);
   }
 }
+export class Dependency {
+  name: string;
+  type: string;
+  visibility: 'public' | 'private' | 'protected';
+  constructor(dep?: Partial<Dependency>) {
+    Object.assign(this, dep);
+  }
+}
+export class TSClass {
+  name: string;
+  extends: string;
+  implements: string[] = [];
+  dependencies: Dependency[];
+  properties: Property[];
+  methods: Method[];
 
+  constructor(clazz?: Partial<TSClass>) {
+    Object.assign(this, clazz);
+  }
+}
 export class Input {
   name: string;
   type: string;
@@ -41,7 +58,6 @@ export class Input {
     Object.assign(this, input);
   }
 }
-
 export class Output {
   name: string;
   type: string;
@@ -50,24 +66,13 @@ export class Output {
     Object.assign(this, output);
   }
 }
-
-export class Dependency {
-  name: string;
-  type: string;
-  visibility: 'public' | 'private' | 'protected';
-
-  constructor(dep?: Partial<Dependency>) {
-    Object.assign(this, dep);
-  }
-}
-
-export class AngularComponent {
-  name: string;
-  properties: Property[];
-  methods: Method[];
+export class AngularComponent extends TSClass {
   inputs: Input[];
   outputs: Output[];
-  dependencies: Dependency[];
-  extends: string;
-  implements: string[] = [];
+
+  constructor(clazz?: Partial<AngularComponent>, inputs?: Input[], outputs?: Output[]) {
+    super(clazz);
+    this.inputs = inputs;
+    this.outputs = outputs;
+  }
 }

@@ -1,6 +1,6 @@
 export const indexTemplate = () => {
     return `
-    <html>
+        <html>
     <head>
         <link href="style.css" rel="stylesheet">
         <meta charset="utf-8">
@@ -33,7 +33,7 @@ export const indexTemplate = () => {
         <div id="uml" class="uml-diagram"></div>
     </div>
     <script src="code.js"></script>
-    <script src="components.js"></script>
+    <script src="classes.js"></script>
     <script src="uml-data.js"></script>
     <script src="uml.js"></script>
     </body>
