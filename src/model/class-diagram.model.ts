@@ -1,4 +1,4 @@
-import { Method, Property } from './angular-component.model';
+import { Input, Method, Output, Property } from './angular-component.model';
 
 export class ClassDiagramModel {
   nodes: UMLNode[] = [];
@@ -9,6 +9,8 @@ export class UMLNode {
   key: string;
   name: string;
   properties: Property[];
+  inputs: Input[];
+  outputs: Output[];
   methods: Method[];
 
   constructor(node: Partial<UMLNode>) {
