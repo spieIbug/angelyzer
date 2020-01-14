@@ -1,5 +1,5 @@
-import { AngularComponent, Dependency, Method, Param, Property } from '../model/angular-component.model';
-import { forEach, find, map, get, filter, flattenDeep } from 'lodash';
+import { AngularComponent, Dependency, Input, Method, Param, Property } from '../model/angular-component.model';
+import { forEach, find, map, get, filter, flattenDeep, intersect } from 'lodash';
 import { AstExtractorService } from './ast-extractor.service';
 
 export class ASTComponentExtractorService extends AstExtractorService {
@@ -9,24 +9,48 @@ export class ASTComponentExtractorService extends AstExtractorService {
     let nodes = ast.program.body;
     const component = new AngularComponent();
     forEach(nodes, (node/*: ExportNamedDeclaration*/) => {
-      if (node.type === 'ExportNamedDeclaration' && node.declaration.type === 'ClassDeclaration') {
-        component.name = node.declaration.id.name;
-        component.implements = map(node.declaration.implements, implem => implem.expression.name);
-        component.extends = get(node.declaration, 'superClass.name');
-        component.properties = map(filter(node.declaration.body.body, p => p.type === 'ClassProperty'), p => new Property({
-          name: p.key.name,
-          visibility: p.accessibility || 'public'
-        }));
-        component.methods = map(filter(node.declaration.body.body, m => m.type === 'ClassMethod' && m.key.name !== 'constructor'), m => this.extractMethodDefinition(m));
+        if (node.type === 'ExportNamedDeclaration' && node.declaration.type === 'ClassDeclaration') {
+          component.name = node.declaration.id.name;
+          component.implements = map(node.declaration.implements, implem => implem.expression.name);
+          component.extends = get(node.declaration, 'superClass.name');
+          component.properties = map(filter(node.declaration.body.body, p => p.type === 'ClassProperty' && !this.isInput(p) && !this.isOutput(p)), p => new Property({
+            name: p.key.name,
+            visibility: p.accessibility || 'public',
+            type: this.extractTypeAsString(get(p, 'typeAnnotation.typeAnnotation')),
+          }));
+          component.inputs = map(filter(node.declaration.body.body, p => p.type === 'ClassProperty' && this.isInput(p)), p => new Input({
+            name: p.key.name,
+            type: this.extractTypeAsString(get(p, 'typeAnnotation.typeAnnotation')),
+          }));
+          component.outputs = map(filter(node.declaration.body.body, p => p.type === 'ClassProperty' && this.isOutput(p)), p => new Input({
+            name: p.key.name,
+            type: this.extractTypeAsString(get(p, 'typeAnnotation.typeAnnotation')),
+          }));
+          component.methods = map(filter(node.declaration.body.body, m => m.type === 'ClassMethod' && m.key.name !== 'constructor'), m => this.extractMethodDefinition(m));
 
-        const constructorBlock = find(node.declaration.body.body, m => m.type === 'ClassMethod' && m.key.name === 'constructor');
-        component.dependencies = this.extractDependencies(constructorBlock);
+          const constructorBlock = find(node.declaration.body.body, m => m.type === 'ClassMethod' && m.key.name === 'constructor');
+          component.dependencies = this.extractDependencies(constructorBlock);
+        }
       }
-    });
+    );
     return component;
   }
 
-  private extractDependencies(constructorMethod /*ClassBody body[]*/): Dependency[] {
+  private isInput(p/*ClassProperty*/): boolean {
+    if (!p.decorators) {
+      return false;
+    }
+    return p.decorators.map(d => d.callee.callee.name).includes('Input');
+  }
+
+  private isOutput(p/*ClassProperty*/): boolean {
+    if (!p.decorators) {
+      return false;
+    }
+    return p.decorators.map(d => d.callee.callee.name).includes('Output');
+  }
+
+  extractDependencies(constructorMethod /*ClassBody body[]*/) : Dependency[] {
     const dependancies = get(constructorMethod, 'params', []);
     return dependancies.map(dep => {
       return new Dependency({
@@ -47,7 +71,7 @@ export class ASTComponentExtractorService extends AstExtractorService {
     });
   }
 
-  private extractTypeAsString(paramType /*TSTypeReference*/): string {
+  private extractTypeAsString(paramType /*TSTypeReference*/) : string {
     let typeParams = get(paramType, 'typeParameters.params', []);
     if (typeParams.length === 0) {
       return get(paramType, 'typeName.name');
@@ -57,7 +81,7 @@ export class ASTComponentExtractorService extends AstExtractorService {
     }
   }
 
-  getParamValue(param /*Param*/): Param {
+  getParamValue(param /*Param*/) : Param {
     if (param.type === 'AssignmentPattern') {
       return new Param({
         name: get(param, 'left.name', param.name),
