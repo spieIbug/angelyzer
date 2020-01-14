@@ -36,11 +36,19 @@ export class Param {
 export class Input {
   name: string;
   type: string;
+
+  constructor(input?: Partial<Input>) {
+    Object.assign(this, input);
+  }
 }
 
 export class Output {
   name: string;
   type: string;
+
+  constructor(output?: Partial<Output>) {
+    Object.assign(this, output);
+  }
 }
 
 export class Dependency {
