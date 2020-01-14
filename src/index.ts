@@ -7,12 +7,12 @@ import {Scanner} from './scanner';
 import fs = require('fs')
 const mkdirp = require('mkdirp');
 
-commander.version('2.0.1').description('Angular analyzer');
+commander.version('2.1.0').description('Angular analyzer');
 
 
-commander.command('scan <projectPath> <extensions> <savePath>').description('Scan an angular project')
-    .action((projectPath, extensions, savePath) => {
-        const suffixes = extensions.split(',');
+commander.command('scan <projectPath> <savePath>').description('Scan an angular project')
+    .action((projectPath, /*extensions,*/ savePath) => {
+        /*const suffixes = extensions.split(',');*/
         const effectiveSavePath = savePath + '/angelyzer_report/';
         console.log(chalk.red(`
      ___   ___     _   _____    ______   _      __    __  ______   ______   _____   
@@ -27,9 +27,12 @@ commander.command('scan <projectPath> <extensions> <savePath>').description('Sca
         mkdirp.sync(effectiveSavePath);
         const scanner = new Scanner();
         fs.readdir(projectPath, (err, files) => {
+            /*
+            todo: enable scann all files optionnaly
             forEach(suffixes, suffixe => {
                 scanner.scanFiles(files, projectPath, effectiveSavePath, suffixe);
             });
+            */
             scanner.scanComponents(files, projectPath, effectiveSavePath);
             scanner.scanModules(files, projectPath, effectiveSavePath);
         });

@@ -124,8 +124,8 @@ export class Scanner {
       fs.writeFileSync(savePath + '/uml.js', umlJSTemplate());
       fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
       fs.writeFileSync(savePath + '/components.js', 'var components = ' + JSON.stringify(this.components, null, 2));
-      fs.writeFileSync(savePath + '/classes.js', 'var classes = ' + JSON.stringify(this.classes, null, 2));
-      fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.classMapper.toGraphs(this.classes), null, 2));
+      // fs.writeFileSync(savePath + '/classes.js', 'var classes = ' + JSON.stringify(this.classes, null, 2));
+      fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.componentMapper.toGraphs(this.components), null, 2));
       fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
       fs.writeFileSync(savePath + '/validations.html', validationTemplate(this.validations));
       fs.writeFileSync(savePath + '/refactor.html', refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
