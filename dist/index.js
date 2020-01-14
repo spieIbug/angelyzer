@@ -7,7 +7,7 @@ var chalk = require("chalk");
 var scanner_1 = require("./scanner");
 var fs = require("fs");
 var mkdirp = require('mkdirp');
-commander.version('2.1.0').description('Angular analyzer');
+commander.version('2.1.1').description('Angular analyzer');
 commander.command('scan <projectPath> <savePath>').description('Scan an angular project')
     .action(function (projectPath, /*extensions,*/ savePath) {
     /*const suffixes = extensions.split(',');*/
