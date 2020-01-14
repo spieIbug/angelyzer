@@ -10,6 +10,8 @@ export class ComponentMapper {
         key: component.name,
         name: component.name,
         properties: component.properties,
+        inputs: component.inputs,
+        outputs: component.outputs,
         methods: component.methods,
       }),
       ...map(component.dependencies, dep => new UMLNode({key: dep.type, name: dep.type})),
