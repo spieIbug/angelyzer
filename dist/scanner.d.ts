@@ -13,17 +13,22 @@ export declare class Scanner {
     private voidElementValidator;
     private validations;
     private componentMapper;
+    private classMapper;
     private modules;
     private components;
+    private classes;
     private moduleFilesCount;
     private componentFilesCount;
+    private filesCount;
     constructor();
     scanComponents(files: string[], componentPath: string, savePath: string): void;
+    scanFiles(files: string[], path: string, savePath: string, suffix: string): void;
     scanModules(files: string[], modulePath: string, savePath: string): void;
     /**
      * Scan component.ts file
      * @param inputFile
      */
     private processComponentFile;
+    private processFile;
     private processModuleFile;
 }

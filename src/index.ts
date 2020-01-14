@@ -2,15 +2,17 @@
 import './polyfills';
 import * as commander from 'commander';
 import * as chalk from 'chalk';
+import { forEach } from 'lodash';
 import {Scanner} from './scanner';
 import fs = require('fs')
 const mkdirp = require('mkdirp');
 
-commander.version('2.0.1').description('Angular analyzer');
+commander.version('2.1.0').description('Angular analyzer');
 
 
-commander.command('scan <modulePath> <savePath>').description('Scan an angular project')
-    .action((modulePath, savePath) => {
+commander.command('scan <projectPath> <savePath>').description('Scan an angular project')
+    .action((projectPath, /*extensions,*/ savePath) => {
+        /*const suffixes = extensions.split(',');*/
         const effectiveSavePath = savePath + '/angelyzer_report/';
         console.log(chalk.red(`
      ___   ___     _   _____    ______   _      __    __  ______   ______   _____   
@@ -21,12 +23,18 @@ commander.command('scan <modulePath> <savePath>').description('Scan an angular p
 /_/   |_| |_|   \\___| |______| |______| |______| /_/    |______|  |______| |_|   \\_\\
 `));
         console.log(chalk.white('Angular project analyzer @author: Yacine MEDDAH <my.meddah@gmail.com>'));
-        console.log(chalk.yellow(`Scanning ${modulePath}`));
+        console.log(chalk.yellow(`Scanning ${projectPath}`));
         mkdirp.sync(effectiveSavePath);
         const scanner = new Scanner();
-        fs.readdir(modulePath, (err, files) => {
-            scanner.scanComponents(files, modulePath, effectiveSavePath);
-            scanner.scanModules(files, modulePath, effectiveSavePath);
+        fs.readdir(projectPath, (err, files) => {
+            /*
+            todo: enable scann all files optionnaly
+            forEach(suffixes, suffixe => {
+                scanner.scanFiles(files, projectPath, effectiveSavePath, suffixe);
+            });
+            */
+            scanner.scanComponents(files, projectPath, effectiveSavePath);
+            scanner.scanModules(files, projectPath, effectiveSavePath);
         });
     })
     .on('command:*', () => {

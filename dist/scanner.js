@@ -20,14 +20,17 @@ var logger_1 = require("./logger");
 var ast_component_extractor_service_1 = require("./extractor/ast-component-extractor.service");
 var component_mapper_1 = require("./mapper/component.mapper");
 var uml_js_template_1 = require("./template/uml.js.template");
+var class_mapper_1 = require("./mapper/class.mapper");
 var fs = require('fs');
 var Scanner = /** @class */ (function () {
     function Scanner() {
         this.validations = [];
         this.modules = [];
         this.components = [];
+        this.classes = [];
         this.moduleFilesCount = 0;
         this.componentFilesCount = 0;
+        this.filesCount = 0;
         this.astModuleExtractorService = new ast_module_extractor_service_1.ASTModuleExtractorService();
         this.astComponentExtractorService = new ast_component_extractor_service_1.ASTComponentExtractorService();
         this.graphService = new graph_extractor_service_1.GraphExtractorService();
@@ -41,6 +44,7 @@ var Scanner = /** @class */ (function () {
         this.providersRefactorValidator = new providers_refactor_validator_1.ProvidersRefactorValidator();
         this.voidElementValidator = new void_element_validator_1.VoidElementValidator();
         this.componentMapper = new component_mapper_1.ComponentMapper();
+        this.classMapper = new class_mapper_1.ClassMapper();
     }
     Scanner.prototype.scanComponents = function (files, componentPath, savePath) {
         var _this = this;
@@ -55,6 +59,23 @@ var Scanner = /** @class */ (function () {
                 }
                 else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
                     fs.readdir(fullQualifierPath, function (err, files) { return _this.scanComponents(files, fullQualifierPath, savePath); });
+                }
+            });
+        }
+    };
+    Scanner.prototype.scanFiles = function (files, path, savePath, suffix) {
+        var _this = this;
+        if (files) {
+            files.forEach(function (file) {
+                var fullQualifierPath = path + '/' + file;
+                if (fs.lstatSync(fullQualifierPath).isFile()) {
+                    // scan uniquement de composants
+                    if (fullQualifierPath.indexOf(suffix) !== -1) {
+                        _this.processFile(fullQualifierPath);
+                    }
+                }
+                else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
+                    fs.readdir(fullQualifierPath, function (err, files) { return _this.scanFiles(files, fullQualifierPath, savePath, suffix); });
                 }
             });
         }
@@ -84,8 +105,9 @@ var Scanner = /** @class */ (function () {
             fs.writeFileSync(savePath + '/style.css', style_css_template_1.cssTemplate());
             fs.writeFileSync(savePath + '/uml.js', uml_js_template_1.umlJSTemplate());
             fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
-            fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.componentMapper.toGraphs(this.components), null, 2));
             fs.writeFileSync(savePath + '/components.js', 'var components = ' + JSON.stringify(this.components, null, 2));
+            // fs.writeFileSync(savePath + '/classes.js', 'var classes = ' + JSON.stringify(this.classes, null, 2));
+            fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.componentMapper.toGraphs(this.components), null, 2));
             fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
             fs.writeFileSync(savePath + '/validations.html', validations_html_template_1.validationTemplate(this.validations));
             fs.writeFileSync(savePath + '/refactor.html', refactor_html_template_1.refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
@@ -107,6 +129,13 @@ var Scanner = /** @class */ (function () {
         logger_1.Logger.info(this.componentFilesCount + " scanning component file " + inputFile);
         var angularComponent = this.astComponentExtractorService.extractComponent(componentFileContent);
         this.components.push(angularComponent);
+    };
+    Scanner.prototype.processFile = function (inputFile) {
+        this.filesCount++;
+        var fileContent = fs.readFileSync(inputFile, 'utf-8');
+        logger_1.Logger.info(this.filesCount + " scanning file " + inputFile);
+        var clazz = this.astComponentExtractorService.extractClass(fileContent);
+        this.classes.push(clazz);
     };
     Scanner.prototype.processModuleFile = function (inputFile) {
         this.moduleFilesCount++;

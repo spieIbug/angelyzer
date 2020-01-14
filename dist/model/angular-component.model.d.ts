@@ -21,6 +21,21 @@ export declare class Param {
     value: string;
     constructor(param?: Partial<Param>);
 }
+export declare class Dependency {
+    name: string;
+    type: string;
+    visibility: 'public' | 'private' | 'protected';
+    constructor(dep?: Partial<Dependency>);
+}
+export declare class TSClass {
+    name: string;
+    extends: string;
+    implements: string[];
+    dependencies: Dependency[];
+    properties: Property[];
+    methods: Method[];
+    constructor(clazz?: Partial<TSClass>);
+}
 export declare class Input {
     name: string;
     type: string;
@@ -31,19 +46,8 @@ export declare class Output {
     type: string;
     constructor(output?: Partial<Output>);
 }
-export declare class Dependency {
-    name: string;
-    type: string;
-    visibility: 'public' | 'private' | 'protected';
-    constructor(dep?: Partial<Dependency>);
-}
-export declare class AngularComponent {
-    name: string;
-    properties: Property[];
-    methods: Method[];
+export declare class AngularComponent extends TSClass {
     inputs: Input[];
     outputs: Output[];
-    dependencies: Dependency[];
-    extends: string;
-    implements: string[];
+    constructor(clazz?: Partial<AngularComponent>, inputs?: Input[], outputs?: Output[]);
 }
