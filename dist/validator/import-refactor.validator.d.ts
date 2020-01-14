@@ -8,7 +8,7 @@ export declare class ImportRefactorValidator implements Validator {
      * @returns {Validation[]}
      */
     validate(modules: AngularModule[]): Validation[];
-    private getModulesImportsMap(modules);
+    private getModulesImportsMap;
     /**
      * Exclude RoutingModule for RouterModule check if any other module import RouterModule it will be signaled
      * to be refactored
@@ -16,5 +16,5 @@ export declare class ImportRefactorValidator implements Validator {
      * @param moduleName
      * @returns {string[]} modules
      */
-    private removeRoutingModulesForRouterModule(aSet?, moduleName?);
+    private removeRoutingModulesForRouterModule;
 }

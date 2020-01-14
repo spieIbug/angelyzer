@@ -21,7 +21,6 @@ import { AngularComponent } from './model/angular-component.model';
 import { ASTComponentExtractorService } from './extractor/ast-component-extractor.service';
 import { ComponentMapper } from './mapper/component.mapper';
 import {umlJSTemplate} from "./template/uml.js.template";
-
 const fs = require('fs');
 
 export class Scanner {
@@ -38,14 +37,13 @@ export class Scanner {
   private declarationRefactorValidator: DeclarationRefactorValidator;
   private providersRefactorValidator: ProvidersRefactorValidator;
   private voidElementValidator: VoidElementValidator;
+  private validations: Validation[] = [];
+  private componentMapper: ComponentMapper;
 
   private modules: AngularModule[] = [];
   private components: AngularComponent[] = [];
   private moduleFilesCount: number = 0;
   private componentFilesCount: number = 0;
-  private validations: Validation[] = [];
-  private componentMapper: ComponentMapper;
-
 
   constructor() {
     this.astModuleExtractorService = new ASTModuleExtractorService();
@@ -122,7 +120,6 @@ export class Scanner {
    * @param inputFile
    */
   private processComponentFile(inputFile: string) {
-    console.log(inputFile);
     this.componentFilesCount++;
     const componentFileContent = fs.readFileSync(inputFile, 'utf-8');
     Logger.info(`${this.componentFilesCount} scanning component file ${inputFile}`);
@@ -133,7 +130,7 @@ export class Scanner {
   private processModuleFile(inputFile: string) {
     this.moduleFilesCount++;
     const moduleFileContent = fs.readFileSync(inputFile, 'utf-8');
-    console.log(this.moduleFilesCount, ' scanning file :', inputFile);
+    Logger.info(`${this.moduleFilesCount} scanning module ${inputFile}`);
     // read module
     const angularModule = <AngularModule>this.astModuleExtractorService.extractModule(moduleFileContent);
     this.modules.push(angularModule);
