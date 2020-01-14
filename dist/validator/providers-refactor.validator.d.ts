@@ -17,11 +17,11 @@ export declare class ProvidersRefactorValidator implements Validator {
      * @param modules
      * @returns {Map<string, Set<string>>}
      */
-    private getModulesProvidersMap(modules);
+    private getModulesProvidersMap;
     /**
      * remove exclusionModules form modulesSet
      * @param modulesSet
      * @param exclusionModules
      */
-    private clean(modulesSet, exclusionModules);
+    private clean;
 }

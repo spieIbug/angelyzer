@@ -8,5 +8,5 @@ export declare class DeclarationRefactorValidator implements Validator {
      * @returns {Validation[]}
      */
     validate(modules: AngularModule[]): Validation[];
-    private getModulesDeclarationsMap(modules);
+    private getModulesDeclarationsMap;
 }

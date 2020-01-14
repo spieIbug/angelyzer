@@ -16,13 +16,20 @@ var providers_refactor_validator_1 = require("./validator/providers-refactor.val
 var index_html_template_1 = require("./template/index.html.template");
 var style_css_template_1 = require("./template/style.css.template");
 var void_element_validator_1 = require("./validator/void-element.validator");
+var logger_1 = require("./logger");
+var ast_component_extractor_service_1 = require("./extractor/ast-component-extractor.service");
+var component_mapper_1 = require("./mapper/component.mapper");
+var uml_js_template_1 = require("./template/uml.js.template");
 var fs = require('fs');
 var Scanner = /** @class */ (function () {
     function Scanner() {
-        this.modules = [];
-        this.fileCount = 0;
         this.validations = [];
+        this.modules = [];
+        this.components = [];
+        this.moduleFilesCount = 0;
+        this.componentFilesCount = 0;
         this.astModuleExtractorService = new ast_module_extractor_service_1.ASTModuleExtractorService();
+        this.astComponentExtractorService = new ast_component_extractor_service_1.ASTComponentExtractorService();
         this.graphService = new graph_extractor_service_1.GraphExtractorService();
         this.coreModuleValidation = new core_module_validator_1.CoreModuleValidator();
         this.providersValidator = new providers_validator_1.ProvidersValidator();
@@ -33,21 +40,41 @@ var Scanner = /** @class */ (function () {
         this.declarationRefactorValidator = new declaration_refactor_validator_1.DeclarationRefactorValidator();
         this.providersRefactorValidator = new providers_refactor_validator_1.ProvidersRefactorValidator();
         this.voidElementValidator = new void_element_validator_1.VoidElementValidator();
+        this.componentMapper = new component_mapper_1.ComponentMapper();
     }
-    Scanner.prototype.scanPath = function (files, modulePath, savePath) {
+    Scanner.prototype.scanComponents = function (files, componentPath, savePath) {
         var _this = this;
         if (files) {
+            files.forEach(function (file) {
+                var fullQualifierPath = componentPath + '/' + file;
+                if (fs.lstatSync(fullQualifierPath).isFile()) {
+                    // scan uniquement de composants
+                    if (fullQualifierPath.indexOf('component.ts') !== -1) {
+                        _this.processComponentFile(fullQualifierPath);
+                    }
+                }
+                else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
+                    fs.readdir(fullQualifierPath, function (err, files) { return _this.scanComponents(files, fullQualifierPath, savePath); });
+                }
+            });
+        }
+    };
+    Scanner.prototype.scanModules = function (files, modulePath, savePath) {
+        var _this = this;
+        if (files) {
+            // todo: refactor this part using filte-type.enum.ts
             files.forEach(function (file) {
                 var fullQualifierPath = modulePath + '/' + file;
                 if (fs.lstatSync(fullQualifierPath).isFile()) {
                     // scan uniquement de modules
                     if (fullQualifierPath.indexOf('module.ts') !== -1)
-                        _this.processFile(fullQualifierPath);
+                        _this.processModuleFile(fullQualifierPath);
                 }
                 else if (fs.lstatSync(fullQualifierPath).isDirectory()) {
-                    fs.readdir(fullQualifierPath, function (err, files) { return _this.scanPath(files, fullQualifierPath, savePath); });
+                    fs.readdir(fullQualifierPath, function (err, files) { return _this.scanModules(files, fullQualifierPath, savePath); });
                 }
             });
+            // end todo
             var graph = this.graphService.computeGraph(this.modules);
             var importRefactorValidations = this.importRefactorValidator.validate(this.modules);
             var declarationRefactorValidations = this.declarationRefactorValidator.validate(this.modules);
@@ -55,7 +82,10 @@ var Scanner = /** @class */ (function () {
             var voidRefactorValidations = this.voidElementValidator.validate(this.modules);
             fs.writeFileSync(savePath + '/index.html', index_html_template_1.indexTemplate());
             fs.writeFileSync(savePath + '/style.css', style_css_template_1.cssTemplate());
+            fs.writeFileSync(savePath + '/uml.js', uml_js_template_1.umlJSTemplate());
             fs.writeFileSync(savePath + '/report.json', JSON.stringify(this.modules, null, 2));
+            fs.writeFileSync(savePath + '/uml-data.js', 'var umlData = ' + JSON.stringify(this.componentMapper.toGraphs(this.components), null, 2));
+            fs.writeFileSync(savePath + '/components.js', 'var components = ' + JSON.stringify(this.components, null, 2));
             fs.writeFileSync(savePath + '/nodes.json', JSON.stringify(graph, null, 2));
             fs.writeFileSync(savePath + '/validations.html', validations_html_template_1.validationTemplate(this.validations));
             fs.writeFileSync(savePath + '/refactor.html', refactor_html_template_1.refactorTemplate(importRefactorValidations.concat(voidRefactorValidations)));
@@ -67,15 +97,26 @@ var Scanner = /** @class */ (function () {
             console.log('No files found');
         }
     };
-    Scanner.prototype.processFile = function (inputFile) {
-        this.fileCount++;
-        var fileContent = fs.readFileSync(inputFile, 'utf-8');
-        console.log(this.fileCount, ' scanning file :', inputFile);
+    /**
+     * Scan component.ts file
+     * @param inputFile
+     */
+    Scanner.prototype.processComponentFile = function (inputFile) {
+        this.componentFilesCount++;
+        var componentFileContent = fs.readFileSync(inputFile, 'utf-8');
+        logger_1.Logger.info(this.componentFilesCount + " scanning component file " + inputFile);
+        var angularComponent = this.astComponentExtractorService.extractComponent(componentFileContent);
+        this.components.push(angularComponent);
+    };
+    Scanner.prototype.processModuleFile = function (inputFile) {
+        this.moduleFilesCount++;
+        var moduleFileContent = fs.readFileSync(inputFile, 'utf-8');
+        logger_1.Logger.info(this.moduleFilesCount + " scanning module " + inputFile);
         // read module
-        var angularModule = this.astModuleExtractorService.extractModule(fileContent);
+        var angularModule = this.astModuleExtractorService.extractModule(moduleFileContent);
         this.modules.push(angularModule);
         //
-        var coreSharedModulePatternValidation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(fileContent));
+        var coreSharedModulePatternValidation = this.coreModuleValidation.validate(angularModule, this.astModuleExtractorService.getAST(moduleFileContent));
         var providersValidation = this.providersValidator.validate(angularModule);
         var exportsValidation = this.exportsValidator.validate(angularModule);
         var importsValidation = this.importsValidator.validate(angularModule);

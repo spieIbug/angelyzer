@@ -1,9 +1,24 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var angular_module_model_1 = require("../model/angular-module.model");
-var recast = require("recast");
-var ASTModuleExtractorService = /** @class */ (function () {
+var ast_extractor_service_1 = require("./ast-extractor.service");
+var ASTModuleExtractorService = /** @class */ (function (_super) {
+    __extends(ASTModuleExtractorService, _super);
     function ASTModuleExtractorService() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /**
      * Read an Angular Module fileContent and return AngularModule instance containing Decorator properties
@@ -30,23 +45,14 @@ var ASTModuleExtractorService = /** @class */ (function () {
         }
         return null;
     };
-    /**
-     * Extracts Abstract Syntax Tree for typescript
-     * @param fileContent
-     */
-    ASTModuleExtractorService.prototype.getAST = function (fileContent) {
-        return recast.parse(fileContent, {
-            parser: require("typescript-eslint-parser")
-        });
-    };
     ASTModuleExtractorService.prototype.extractModuleName = function (node /*ExportNamedDeclaration | ClassDeclaration*/) {
         return node.declaration.id.name;
     };
     ASTModuleExtractorService.prototype.extractNgModuleDecorator = function (node /*ExportNamedDeclaration | ClassDeclaration*/) {
         for (var _i = 0, _a = node.declaration.decorators; _i < _a.length; _i++) {
             var decorator = _a[_i];
-            if (decorator.expression.callee.name === 'NgModule') {
-                return decorator.expression.arguments[0];
+            if (decorator.callee.callee.name === 'NgModule') {
+                return decorator.callee.arguments[0];
             }
         }
     };
@@ -235,7 +241,7 @@ var ASTModuleExtractorService = /** @class */ (function () {
                             }
                             // todo: handle useFactory, useExisting
                         }
-                        else {
+                        else { // cas Identifier
                             values.push(val.name);
                         }
                     }
@@ -246,5 +252,5 @@ var ASTModuleExtractorService = /** @class */ (function () {
         return values;
     };
     return ASTModuleExtractorService;
-}());
+}(ast_extractor_service_1.AstExtractorService));
 exports.ASTModuleExtractorService = ASTModuleExtractorService;
